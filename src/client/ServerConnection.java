@@ -1,6 +1,8 @@
 package client;
 
+import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class ServerConnection {
 
@@ -10,7 +12,15 @@ public class ServerConnection {
 	
 	public ServerConnection()
 	{
-		socket = new Socket(host, port);
+		try {
+			socket = new Socket(host, port);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

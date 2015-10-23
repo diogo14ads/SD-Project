@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import common.TCPMessage;
 import common.TCPMessageType;
@@ -18,7 +19,7 @@ public class ClientConnection implements Runnable {
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 
-	public ClientConnection(Socket socket) {
+	public ClientConnection(Socket socket, int numberOfSocket, ArrayList<Socket> clientSockets) {
 		super();
 		this.socket = socket;
 		try {
