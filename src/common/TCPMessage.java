@@ -1,6 +1,12 @@
 package common;
 
-public class TCPMessage {
+import java.io.Serializable;
+
+public class TCPMessage implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1828279559078599563L;
 	private TCPMessageType type;
 	
 
