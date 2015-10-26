@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 import common.RMIInterface;
 import common.TCPMessage;
@@ -16,8 +17,6 @@ public class ClientConnection implements Runnable {
 	
 	private Socket socket;
 	private RMIInterface ri;
-	private DataOutputStream dout;
-	private DataInputStream din;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 
@@ -44,9 +43,12 @@ public class ClientConnection implements Runnable {
 			TCPMessage msg = null;
 			try {
 				msg = (TCPMessage) ois.readObject();
-			} catch (ClassNotFoundException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				System.err.println("ClassNotFound: "+e);
+				break;
+			} catch (IOException e) {
+				System.err.println("IOException in socket "+socket.getInetAddress()+": "+e);
+				break;
 			}
 			
 			//Verifica request e encaminha para o metodo correspondente
@@ -54,26 +56,45 @@ public class ClientConnection implements Runnable {
 			{
 				if(msg.getType() == TCPMessageType.LOGIN_REQUEST)
 				{
-					login();
-					break;
+					//TODO dá para fazer um try/catch para todos?
+					try {
+						login(msg);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
 		
 	}
 
-	private void login() {
-		// TODO Auto-generated method stub
-		System.out.println("For now, this only says shit");
+	private void login(TCPMessage msg) throws IOException {
 		
-		try {
-			ri.login("Big", "Boss");
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		ArrayList<String> loginData = msg.getStrings(); // index 0: E-mail || index 1: Password
+		TCPMessage response = new TCPMessage(TCPMessageType.LOGIN_REQUEST);
+		boolean valid = false;
+		
+		if(!loginData.isEmpty() || loginData.size()==2)
+		{
+			try {
+				valid=ri.login(loginData.get(0), loginData.get(1));
+			} catch (RemoteException e) {
+				System.err.println("Remore: "+e);
+			}
 		}
 		
-		
+		//TODO criar função à parte? por num objecto tipo Mensagem?
+		if(valid == true)
+		{
+			response.getStrings().add("1");
+		}
+		else {
+			response.getStrings().add("0");
+		}
+
+		oos.writeObject(response);
 	}
+	
 	
 }

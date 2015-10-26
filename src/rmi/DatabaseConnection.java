@@ -4,7 +4,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DatabaseConnection {
 
@@ -50,4 +52,48 @@ public class DatabaseConnection {
 	    return DriverManager.getConnection(dbUrl, username, password);
 	}
 	
+	public boolean checkLogin(String email, String password)
+	{
+		String sqlQuery = null;
+		ResultSet result = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			System.err.println("SQL: "+e);
+		}
+		sqlQuery =
+				"select count(*) "
+				+ "from user_account "
+				+ "where email = '"+email+"' and password='"+password+"'";
+		
+		
+		
+		try {
+			result = statement.executeQuery(sqlQuery);
+			result.next();
+			
+			if(result.getInt(1)==1)
+				return true;
+			else
+				return false;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	//Rascunho
+	/*
+	Statement stm = dbCon.getConnection().createStatement();
+	String sqlQuery = "select * from user_account";
+	
+	ResultSet res = stm.executeQuery(sqlQuery);
+	res.next();
+	System.out.println(res.getString("email"));
+	*/
 }
