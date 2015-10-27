@@ -21,7 +21,9 @@ public class Client {
         System.out.println("Main Menu");
         System.out.println("---------------------------");
         System.out.println("1. Login");
-        System.out.println("2. Register");
+        System.out.println("2. Register Account");
+        System.out.println("3. View Current Projects");
+        System.out.println("4. View Past Projects");
         System.out.println("0. Exit the program");
         System.out.println("----------------------------");
         System.out.println("");
@@ -35,8 +37,12 @@ public class Client {
 		System.out.println("");
         System.out.println("Main Menu");
         System.out.println("---------------------------");
-        System.out.println("1. Logout");
-        System.out.println("0. Exit the program");
+        System.out.println("1. View Current Projects");
+        System.out.println("2. View Past Projects");
+        System.out.println("3. My Account");
+        System.out.println("4. Create Project");
+        System.out.println("5. My Message");
+        System.out.println("0. Logout");
         System.out.println("----------------------------");
         System.out.println("");
         System.out.print("Please select an option from 1-2");
@@ -101,26 +107,36 @@ public class Client {
 				printLoggedMenu();
 			
 			op = sc.nextLine();
-			if(op.equals("1"))
+			
+			if(!loggedIn)
 			{
-				if(loggedIn)
+				if(op.equals("1"))
 				{
-					loggedIn=false;
-				}
-				else
 					askLoginData();
-			}
-			if(!loggedIn){
-				if(op.equals("2"))
+				}
+				else if(op.equals("2"))
 				{
 					askRegisterData();
 				}
+				else if(op.equals("0"))
+				{
+					servConn.closeConnection();
+					break;
+				}
 			}
-			else if(op.equals("0"))
-			{
-				servConn.closeConnection();
-				break;
+			
+			else{
+				if(op.equals("1"))
+				{
+					loggedIn=false;
+				}
+				else if(op.equals("0"))
+				{
+					servConn.closeConnection();
+					break;
+				}
 			}
+			
 		}
 	}
 

@@ -15,6 +15,7 @@ public class DatabaseConnection {
 	public DatabaseConnection()
 	{
 		try {
+			System.out.println("Connecting to Database...");
 			this.connection = getDatabaseConnection();
 			System.out.println("Connected to Heroku Database");
 		} catch (URISyntaxException e) {
