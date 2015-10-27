@@ -64,6 +64,15 @@ public class ClientConnection implements Runnable {
 						e.printStackTrace();
 					}
 				}
+				else if(msg.getType() == TCPMessageType.REGISTER_REQUEST)
+				{	
+					try {
+						register(msg);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 		
@@ -75,7 +84,7 @@ public class ClientConnection implements Runnable {
 		TCPMessage response = new TCPMessage(TCPMessageType.LOGIN_REQUEST);
 		boolean valid = false;
 		
-		if(!loginData.isEmpty() || loginData.size()==2)
+		if(!loginData.isEmpty() && loginData.size()==2)
 		{
 			try {
 				valid=ri.login(loginData.get(0), loginData.get(1));
@@ -93,6 +102,34 @@ public class ClientConnection implements Runnable {
 			response.getStrings().add("0");
 		}
 
+		oos.writeObject(response);
+	}
+	
+	private void register(TCPMessage msg) throws IOException
+	{
+		ArrayList<String> registerData = msg.getStrings();	// index 0: primeiro e ultimo nome || index 1: email || index 2: password
+		TCPMessage response = new TCPMessage(TCPMessageType.REGISTER_REQUEST);
+		boolean success = false;
+		
+		if(!registerData.isEmpty() && registerData.size()==3
+				&& registerData.get(1).length()>0 && registerData.get(2).length()>0)
+		{
+			try {
+				success = ri.register(registerData.get(0), registerData.get(1), registerData.get(2));
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		if(success == true)
+		{
+			response.getStrings().add("1");
+		}
+		else {
+			response.getStrings().add("0");
+		}
+		
 		oos.writeObject(response);
 	}
 	

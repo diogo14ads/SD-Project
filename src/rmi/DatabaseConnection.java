@@ -86,6 +86,47 @@ public class DatabaseConnection {
 		
 		return false;
 	}
+
+	public boolean registerAccount(String name, String email, String password) {
+		String sqlQuery = null;
+		ResultSet result = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		sqlQuery =
+				"select count(*) "
+				+ "from user_account "
+				+ "where email = '"+email+"'";
+		
+		try {
+			result = statement.executeQuery(sqlQuery);
+			result.next();
+			
+			if(result.getInt(1)>0)
+				return false;
+			else
+			{
+				sqlQuery = "insert into user_account(user_name,email,password,balance) "
+						+ "values ('"+name+"','"+email+"','"+password+"',100)";
+				statement.executeUpdate(sqlQuery);
+				return true;
+			}
+
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return false;
+	}
 	
 	//Rascunho
 	/*

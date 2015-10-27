@@ -2,5 +2,6 @@ package common;
 
 public enum TCPMessageType {
 	
-	LOGIN_REQUEST
+	LOGIN_REQUEST, 
+	REGISTER_REQUEST
 }

@@ -46,7 +46,30 @@ public class ServerConnection {
 		System.out.println("Connection ended");
 	}
 	
-	public boolean login(ArrayList<String> loginData)
+	public boolean registerAccount(ArrayList<String> registerData)	//Dá para fazer uma função geral
+	{
+		TCPMessage msg = new TCPMessage(TCPMessageType.REGISTER_REQUEST,registerData);
+		TCPMessage response = null;
+		
+		try {
+			oos.writeObject(msg);
+			
+			response = (TCPMessage) ois.readObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(response.getStrings().get(0).equals("1"))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean login(ArrayList<String> loginData)				//Dá para fazer uma função geral
 	{
 		TCPMessage msg = new TCPMessage(TCPMessageType.LOGIN_REQUEST, loginData);
 		TCPMessage response = null;

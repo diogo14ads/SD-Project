@@ -21,6 +21,7 @@ public class Client {
         System.out.println("Main Menu");
         System.out.println("---------------------------");
         System.out.println("1. Login");
+        System.out.println("2. Register");
         System.out.println("0. Exit the program");
         System.out.println("----------------------------");
         System.out.println("");
@@ -64,6 +65,30 @@ public class Client {
 		}
 	}
 	
+	public void askRegisterData()
+	{
+		ArrayList<String> registerData = new ArrayList<>();
+		
+		System.out.println("Enter your first and last name: ");
+		registerData.add(sc.nextLine());
+		
+		System.out.println("Enter your e-mail: ");
+		registerData.add(sc.nextLine());
+		
+		System.out.println("Enter the desired password: ");
+		registerData.add(sc.nextLine());
+		
+		if(servConn.registerAccount(registerData))
+		{
+			System.out.println("Register successfull.");
+			loggedIn = true;
+		}
+		else
+		{
+			System.out.println("Register failed!");
+		}
+	}
+	
 	public void launch()
 	{
 		while(true)
@@ -84,6 +109,12 @@ public class Client {
 				}
 				else
 					askLoginData();
+			}
+			if(!loggedIn){
+				if(op.equals("2"))
+				{
+					askRegisterData();
+				}
 			}
 			else if(op.equals("0"))
 			{

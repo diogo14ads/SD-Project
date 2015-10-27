@@ -25,6 +25,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 		return dbCon.checkLogin(email,password);
 	}
 	
+	public boolean register(String name, String email, String password) throws RemoteException
+	{
+		return dbCon.registerAccount(name,email,password);
+	}
+	
 	public static void main(String[] args) throws RemoteException{
 		RMIInterface ri = new RMIServer();
 		
