@@ -43,7 +43,11 @@ public class DatabaseConnection {
 	}
 
 	private Connection getDatabaseConnection() throws URISyntaxException, SQLException {
-		
+		/*
+		 * Database
+		 * Username: fzekibiamscilk
+		 * Password: 6zSggqjUA1eNrp9zNKT1hrlpdl
+		 */
 		URI dbUri = new URI("postgres://fzekibiamscilk:6zSggqjUA1eNrp9zNKT1hrlpdl@ec2-75-101-162-243.compute-1.amazonaws.com:5432/dujiun5jm8qrj");
 		
 	    String username = dbUri.getUserInfo().split(":")[0];
@@ -127,6 +131,47 @@ public class DatabaseConnection {
 		
 		
 		return false;
+	}
+
+	public boolean insertNewProject(String name, String description, String date, String goal, String userEmail) {
+		String sqlQuery = null;
+		ResultSet result = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			//statement.executeQuery("set datestyle = 'ISO, DMY'");
+			
+			//Insert na tabela project
+			sqlQuery = "insert into project (id_project,date_start,date_end,project_name,money_raised,project_description) "
+				+ "values (nextval('project_id_seq'),current_timestamp,'"+date+"','"+name+"',0,'"+description+"')";
+			statement.executeUpdate(sqlQuery);
+			
+			//insert na tabela manages
+			sqlQuery = "insert into manages (email, id_project) "
+					+ "values ('"+userEmail+"', currval('project_id_seq'))";
+			statement.executeUpdate(sqlQuery);
+
+			//insert na tabela level
+			sqlQuery = "insert into level(id_project,level_id,objective) "
+					+ "values (currval('project_id_seq'),0,"+goal+")";
+			statement.executeUpdate(sqlQuery);
+			
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.err.println("SQL Exception: "+e);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
 	//Rascunho

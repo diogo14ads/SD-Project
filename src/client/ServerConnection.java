@@ -48,11 +48,11 @@ public class ServerConnection {
 	
 	public boolean registerAccount(ArrayList<String> registerData)	//Dá para fazer uma função geral
 	{
-		TCPMessage msg = new TCPMessage(TCPMessageType.REGISTER_REQUEST,registerData);
+		TCPMessage message = new TCPMessage(TCPMessageType.REGISTER_REQUEST,registerData);
 		TCPMessage response = null;
 		
 		try {
-			oos.writeObject(msg);
+			oos.writeObject(message);
 			
 			response = (TCPMessage) ois.readObject();
 		} catch (IOException e) {
@@ -71,11 +71,11 @@ public class ServerConnection {
 	
 	public boolean login(ArrayList<String> loginData)				//Dá para fazer uma função geral
 	{
-		TCPMessage msg = new TCPMessage(TCPMessageType.LOGIN_REQUEST, loginData);
+		TCPMessage message = new TCPMessage(TCPMessageType.LOGIN_REQUEST, loginData);
 		TCPMessage response = null;
 		
 		try {
-			oos.writeObject(msg);
+			oos.writeObject(message);
 			
 			response = (TCPMessage) ois.readObject();
 
@@ -92,6 +92,25 @@ public class ServerConnection {
 		else
 			return false;
 		
+	}
+
+	public void createProject(ArrayList<String> projectData) {
+		
+		TCPMessage message = new TCPMessage(TCPMessageType.CREATE_PROJECT_REQUEST, projectData);
+		//Nao precisa de response, se for preciso reenviar faz em background (é preciso implementar)
+		
+		try {
+			oos.writeObject(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void sendMessage()
+	{
+		//TODO implementar funçao genérica de envio de mensagens (se houver tempo)
 	}
 
 }
