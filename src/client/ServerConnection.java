@@ -108,9 +108,30 @@ public class ServerConnection {
 		
 	}
 	
+	public int checkBalance() {
+		TCPMessage message = new TCPMessage(TCPMessageType.CHECK_BALANCE_REQUEST);
+		TCPMessage response = null;
+		
+		try {
+			oos.writeObject(message);
+			
+			response = (TCPMessage) ois.readObject(); //saldo vem no index 0 do arraylist de integers
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response.getIntegers().get(0);
+	}
+	
 	public void sendMessage()
 	{
 		//TODO implementar funçao genérica de envio de mensagens (se houver tempo)
 	}
+
+	
 
 }

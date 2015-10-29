@@ -35,6 +35,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 		return dbCon.insertNewProject(name,description,date,goal,userEmail);
 	}
 	
+	public int checkBalance(String activeUser) throws RemoteException
+	{
+		return dbCon.checkBalance(activeUser);
+	}
+	
 	public static void main(String[] args) throws RemoteException{
 		RMIInterface ri = new RMIServer();
 		

@@ -78,7 +78,31 @@ public class ClientConnection implements Runnable {
 				{
 					createProject(message);
 				}
+				else if(message.getType() == TCPMessageType.CHECK_BALANCE_REQUEST)
+				{
+					checkBalance(message);
+				}
 			}
+		}
+		
+	}
+
+	private void checkBalance(TCPMessage message) {
+		TCPMessage response = new TCPMessage(TCPMessageType.CHECK_BALANCE_REQUEST);
+		int balance = -1;
+		
+		try {
+			balance = ri.checkBalance(activeUser);
+			
+			response.getIntegers().add(balance);
+			
+			oos.writeObject(response);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}

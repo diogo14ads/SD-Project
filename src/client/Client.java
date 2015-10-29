@@ -55,6 +55,22 @@ public class Client {
         System.out.println("");
 	}
 	
+	public void printMyAccountMenu()
+	{
+		System.out.println("My Account");
+        System.out.println("---------------------------");
+        System.out.println("1. Check Balance");
+        System.out.println("2. Check Rewards");
+        System.out.println("3. Manage Projects");
+        System.out.println("0. <- Back");
+        System.out.println("----------------------------");
+        System.out.println("");
+        System.out.print("Please select an option from 0-3");
+        System.out.println("");
+        System.out.println("");
+	}
+	
+	
 	public void askLoginData()
 	{
 		ArrayList<String> loginData = new ArrayList<>();
@@ -129,6 +145,26 @@ public class Client {
 		
 	}
 	
+	public void myAccount()
+	{
+		String op;
+		while(true)
+		{
+			op = "";
+			printMyAccountMenu();
+			op = sc.nextLine();
+			
+			if(op.equals("1"))
+			{
+				System.out.println("Current Balance: "+servConn.checkBalance());
+			}
+			else if(op.equals("0"))
+			{
+				break;
+			}
+		}
+	}
+	
 	public void launch()
 	{
 		while(true)
@@ -160,7 +196,11 @@ public class Client {
 			}
 			
 			else{
-				if(op.equals("4"))
+				if(op.equals("3"))
+				{
+					myAccount();
+				}
+				else if(op.equals("4"))
 				{
 					askProjectData();
 				}

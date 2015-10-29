@@ -135,7 +135,7 @@ public class DatabaseConnection {
 
 	public boolean insertNewProject(String name, String description, String date, String goal, String userEmail) {
 		String sqlQuery = null;
-		ResultSet result = null;
+		//ResultSet result = null;
 		Statement statement = null;
 		
 		try {
@@ -172,6 +172,35 @@ public class DatabaseConnection {
 			return false;
 		}
 		return true;
+	}
+
+	public int checkBalance(String activeUser) {
+		String sqlQuery = null;
+		Statement statement = null;
+		ResultSet result = null;
+		int balance = -1;
+		
+		try {
+			statement = connection.createStatement();
+			
+			sqlQuery = "select balance "
+					+ "from user_account "
+					+ "where email = '"+activeUser+"'";
+			
+			result = statement.executeQuery(sqlQuery);
+			
+			result.next();
+
+			balance = result.getInt(1);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		return balance;
 	}
 	
 	//Rascunho

@@ -14,4 +14,7 @@ public interface RMIInterface extends Remote {
 
 	public boolean createProject(String name, String description, String date, String goal,String userEmail) throws RemoteException;
 
+
+	public int checkBalance(String activeUser) throws RemoteException;
+
 }
