@@ -19,6 +19,7 @@ public class ClientConnection implements Runnable {
 	private RMIInterface ri;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
+	private String activeUser;
 
 	public ClientConnection(Socket socket, RMIInterface ri) {
 		super();
@@ -40,9 +41,9 @@ public class ClientConnection implements Runnable {
 
 		while(!socket.isClosed())
 		{
-			TCPMessage msg = null;
+			TCPMessage message = null;
 			try {
-				msg = (TCPMessage) ois.readObject();
+				message = (TCPMessage) ois.readObject();
 			} catch (ClassNotFoundException e) {
 				System.err.println("ClassNotFound: "+e);
 				break;
@@ -52,27 +53,48 @@ public class ClientConnection implements Runnable {
 			}
 			
 			//Verifica request e encaminha para o metodo correspondente
-			if(msg != null)
+			if(message != null)
 			{
-				if(msg.getType() == TCPMessageType.LOGIN_REQUEST)
+				if(message.getType() == TCPMessageType.LOGIN_REQUEST)
 				{
 					//TODO dá para fazer um try/catch para todos?
 					try {
-						login(msg);
+						login(message);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-				else if(msg.getType() == TCPMessageType.REGISTER_REQUEST)
+				else if(message.getType() == TCPMessageType.REGISTER_REQUEST)
 				{	
 					try {
-						register(msg);
+						register(message);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
+				else if(message.getType() == TCPMessageType.CREATE_PROJECT_REQUEST)
+				{
+					createProject(message);
+				}
+			}
+		}
+		
+	}
+
+	private void createProject(TCPMessage message) {
+		ArrayList<String> projectData = message.getStrings(); //0: name | 1:description | 2: limit date 
+		//falta a resposta para garantir persistência
+		boolean success = false;
+		
+		if(!projectData.isEmpty() && projectData.size()==4)
+		{
+			try {
+				success=ri.createProject(projectData.get(0),projectData.get(1),projectData.get(2),projectData.get(3),activeUser);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		
@@ -97,6 +119,7 @@ public class ClientConnection implements Runnable {
 		if(valid == true)
 		{
 			response.getStrings().add("1");
+			activeUser = loginData.get(0);
 		}
 		else {
 			response.getStrings().add("0");
@@ -125,6 +148,7 @@ public class ClientConnection implements Runnable {
 		if(success == true)
 		{
 			response.getStrings().add("1");
+			activeUser = registerData.get(0);
 		}
 		else {
 			response.getStrings().add("0");

@@ -30,6 +30,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 		return dbCon.registerAccount(name,email,password);
 	}
 	
+	public boolean createProject(String name, String description, String date, String goal, String userEmail) throws RemoteException
+	{
+		return dbCon.insertNewProject(name,description,date,goal,userEmail);
+	}
+	
 	public static void main(String[] args) throws RemoteException{
 		RMIInterface ri = new RMIServer();
 		

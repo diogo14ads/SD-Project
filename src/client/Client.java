@@ -1,6 +1,11 @@
 package client;
 
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class Client {
@@ -95,6 +100,35 @@ public class Client {
 		}
 	}
 	
+
+	private void askProjectData() {
+		
+		//start date is system date
+		ArrayList<String> projectData = new ArrayList<>();
+		String limitDate;
+		
+		System.out.println("Insert project name: ");
+		projectData.add(sc.nextLine());
+		
+		System.out.println("Describe your project: ");
+		projectData.add(sc.nextLine());
+		
+		System.out.println("Insert date limit (dd/mm/yyyy hh:mm): ");
+		limitDate = sc.nextLine();
+		while(!isDate(limitDate))
+		{
+			limitDate = sc.nextLine();
+		}
+		projectData.add(limitDate);
+		
+		//TODO proteger o input
+		System.out.println("Insert the money goal: ");
+		projectData.add(Integer.toString(sc.nextInt()));
+		
+		servConn.createProject(projectData);
+		
+	}
+	
 	public void launch()
 	{
 		while(true)
@@ -126,19 +160,47 @@ public class Client {
 			}
 			
 			else{
-				if(op.equals("1"))
+				if(op.equals("4"))
 				{
-					loggedIn=false;
+					askProjectData();
 				}
 				else if(op.equals("0"))
 				{
-					servConn.closeConnection();
-					break;
+					loggedIn=false;
 				}
 			}
 			
 		}
 	}
+	
+	public boolean isDate(String date)
+	{
+		boolean result = false;
+	    DateFormat df = new SimpleDateFormat("dd/MM/yyyy kk:mm", Locale.ENGLISH);
+	    try {
+			df.parse(date);
+			result = true;
+		} catch (ParseException e) {
+			System.out.println("Date not well formed! Please insert correct date (hh:mm dd/mm/yyyy): ");
+		}
+	    
+	    return result;
+	}
+	
+	public java.util.Date inputDate(String date){
+	    DateFormat df = new SimpleDateFormat("dd/MM/yyyy kk:mm", Locale.ENGLISH);
+	    java.util.Date result = null;
+		try {
+			result = df.parse(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		return result;
+		
+	}
+
 
 	public static void main(String[] args) {
 		Client client = new Client();
