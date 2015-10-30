@@ -354,6 +354,34 @@ public class DatabaseConnection {
 		}
 		return true;
 	}
+
+	public boolean addReward(int projectId, int levelId, String description, int value) {
+		String sqlQuery = null;
+		//ResultSet result = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+
+			sqlQuery = "insert into reward(reward_id,id_project,level_id,reward_description,value) "
+					+ "values (nextval('reward_id_seq'),"+projectId+","+levelId+",'"+description+"', "+value+")";
+
+			statement.executeUpdate(sqlQuery);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.err.println("SQL Exception: "+e);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	
 	//Rascunho
 	/*

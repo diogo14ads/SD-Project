@@ -99,8 +99,35 @@ public class ClientConnection implements Runnable {
 				{
 					addLevel(message);
 				}
+				else if(message.getType() == TCPMessageType.ADD_REWARD_REQUEST)
+				{
+					addReward(message);
+				}
 			}
 		}
+		
+	}
+
+	private void addReward(TCPMessage message) {
+		int projectId = message.getIntegers().get(0);
+		int levelId = message.getIntegers().get(1);
+		String description = message.getStrings().get(0);
+		int value = message.getIntegers().get(2);
+		//falta a resposta para garantir persistência
+		boolean success = false;
+		
+		if(!message.getIntegers().isEmpty() && !message.getStrings().isEmpty() 
+				&& message.getIntegers().size()==3 && message.getStrings().size()==1)
+		{
+			try {
+				success=ri.addReward(projectId,levelId,description,value);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		System.out.println(success);
 		
 	}
 

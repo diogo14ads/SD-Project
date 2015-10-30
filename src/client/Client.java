@@ -191,7 +191,7 @@ public class Client {
 				
 				if(op.equals("1"))
 				{
-					
+					addReward(projectId,levelId);
 				}
 				else if(op.equals("2"))
 				{
@@ -211,6 +211,30 @@ public class Client {
 				}
 			}
 		}
+	}
+
+	private void addReward(int projectId, int levelId) {
+		
+		String description;
+		int value;
+		
+		System.out.println("Insert the description of the reward: ");
+		description = sc.nextLine();
+		
+		System.out.println("Insert the value of the reward: ");
+		while(true)
+		{
+			try{
+				value = sc.nextInt();
+				break;
+			} catch(InputMismatchException e){
+				System.out.println("Invalid Option!\nPlease insert a numeric value: ");
+			}
+		}
+		
+		servConn.addReward(projectId,levelId,description,value);
+		
+		
 	}
 
 	private void changeGoal(int projectId, int levelId) 

@@ -30,4 +30,7 @@ public interface RMIInterface extends Remote {
 
 	public boolean addLevel(int projectId, int goal) throws RemoteException;
 
+
+	public boolean addReward(int projectId, int levelId, String description, int value) throws RemoteException;
+
 }

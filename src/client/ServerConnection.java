@@ -215,6 +215,27 @@ public class ServerConnection {
 		
 	}
 
+	public void addReward(int projectId, int levelId, String description, int value) {
+		TCPMessage message = new TCPMessage(TCPMessageType.ADD_REWARD_REQUEST);
+		
+		message.getIntegers().add(projectId);
+
+		message.getIntegers().add(levelId);
+
+		message.getStrings().add(description);
+
+		message.getIntegers().add(value);
+		
+		try {
+			oos.writeObject(message);
+			
+			//TODO persistencia
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	
 
 }
