@@ -275,6 +275,21 @@ public class ServerConnection {
 
 	}
 
+	public void removeLevel(int levelId) {
+		TCPMessage message = new TCPMessage(TCPMessageType.REMOVE_LEVEL_REQUEST);
+		
+		message.getIntegers().add(levelId);
+		
+		try {
+			oos.writeObject(message);
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 	
 
 }

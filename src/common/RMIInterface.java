@@ -36,7 +36,8 @@ public interface RMIInterface extends Remote {
 
 	public ArrayList<DatabaseRow> levelRewardsList(int projectId, int levelId) throws RemoteException;
 
-
 	public boolean removeReward(int rewardId) throws RemoteException;
+
+	public boolean removeLevel(int levelId) throws RemoteException;
 
 }

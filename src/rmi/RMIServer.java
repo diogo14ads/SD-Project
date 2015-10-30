@@ -73,13 +73,15 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 		return dbCon.removeReward(rewardId);
 	}
 	
+	public boolean removeLevel(int levelId) throws RemoteException {
+		return dbCon.removeLevel(levelId);
+	}
+	
 	public static void main(String[] args) throws RemoteException{
 		RMIInterface ri = new RMIServer();
 		
 		LocateRegistry.createRegistry(4001).rebind("rmi", ri);
 		System.out.println("RMI Server ready...");
 	}
-
-
 
 }

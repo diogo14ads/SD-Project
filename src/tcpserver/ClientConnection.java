@@ -111,7 +111,25 @@ public class ClientConnection implements Runnable {
 				{
 					removeReward(message);
 				}
+				else if(message.getType() == TCPMessageType.REMOVE_LEVEL_REQUEST)
+				{
+					removeLevel(message);
+				}
 			}
+		}
+		
+	}
+
+	private void removeLevel(TCPMessage message) {
+		int levelId = message.getIntegers().get(0);
+		boolean success = false;
+		
+		try {
+			success = ri.removeLevel(levelId);
+			
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
@@ -124,9 +142,6 @@ public class ClientConnection implements Runnable {
 			success = ri.removeReward(rewardId);
 			
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

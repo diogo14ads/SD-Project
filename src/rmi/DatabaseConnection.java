@@ -455,6 +455,40 @@ public class DatabaseConnection {
 		}
 		return true;
 	}
+
+	public boolean removeLevel(int levelId) {
+		String sqlQuery = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			
+
+			sqlQuery = "delete from reward "
+					+ "where level_id = "+levelId;
+
+			statement.executeUpdate(sqlQuery);
+
+			sqlQuery = "delete from level "
+					+ "where level_id = "+levelId;
+
+			statement.executeUpdate(sqlQuery);
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.err.println("SQL Exception: "+e);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	
 	//Rascunho
 	/*

@@ -139,7 +139,7 @@ public class Client {
 			}
 			else if(op.equals("2"))
 			{
-				
+				removeLevel(projectId);
 			}
 			else if(op.equals("3"))
 			{
@@ -158,6 +158,21 @@ public class Client {
 		
 	}
 	
+	private void removeLevel(int projectId) {
+		int levelId = chooseLevel(servConn.getProjectLevels(projectId),false);
+		
+		if(levelId < 1) //nível zero nao pode ser eliminado (é onde está guardado o limite base a atingir pelo projecto)
+		{
+			System.out.println("There was an unexpected problem!");
+		}
+		else
+		{
+			
+			servConn.removeLevel(levelId);
+		}
+		
+	}
+
 	private void addLevel(int projectId) {
 		
 		int goal;
@@ -172,7 +187,7 @@ public class Client {
 	private void editLevelMenu(int projectId) 
 	{
 		String op = null;
-		int levelId = chooseLevel(servConn.getProjectLevels(projectId));
+		int levelId = chooseLevel(servConn.getProjectLevels(projectId), true);
 		
 		if(levelId < 0)
 		{
@@ -322,7 +337,7 @@ public class Client {
 		
 	}
 
-	private int chooseLevel(ArrayList<DatabaseRow> table)
+	private int chooseLevel(ArrayList<DatabaseRow> table, boolean includeZero)
 	{
 		int op = -1;
 		
@@ -332,7 +347,19 @@ public class Client {
 			
 			for(int i=0;i<table.size();i++)
 			{
-				System.out.println((i+1)+": "+table.get(i).getColumns().get(1));
+				if(table.get(i).getColumns().get(0).equals("0"))
+				{
+					if(!includeZero) //se for para apagar niveis, exclui o zero porque nao pode ser apagado
+					{
+						table.remove(i);
+						i--;
+					}
+					else
+						System.out.println((i+1)+": "+table.get(i).getColumns().get(1));
+						
+				}
+				else
+					System.out.println((i+1)+": "+table.get(i).getColumns().get(1));
 			}
 			System.out.println("0: <- Back");
 			System.out.println("Please select a level from 1-"+table.size()+": ");
