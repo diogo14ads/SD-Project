@@ -643,7 +643,7 @@ public class Client {
 				}
 				else if(op.equals("4"))
 				{
-					
+					viewPastProjects();
 				}
 				else if(op.equals("0"))
 				{
@@ -656,6 +656,10 @@ public class Client {
 				if(op.equals("1"))
 				{
 					viewCurrentProjects();
+				}
+				else if(op.equals("2"))
+				{
+					viewPastProjects();
 				}
 				else if(op.equals("3"))
 				{
@@ -674,23 +678,54 @@ public class Client {
 		}
 	}
 	
-	private void viewCurrentProjects() {
-		ArrayList<DatabaseRow> table = servConn.getCurrentProjects();
+	private void viewPastProjects() {
+		ArrayList<DatabaseRow> table = servConn.getProjects(false); //false significa past projects
 		int index = chooseProject(table);
 		
-		printProjectInfo(table.get(index).getColumns());
+		printProjectInfo(table.get(index).getColumns(),false);
+		
+	}
+
+	private void viewCurrentProjects() {
+		ArrayList<DatabaseRow> table = servConn.getProjects(true); //true significa current projects
+		int index = chooseProject(table);
+		
+		printProjectInfo(table.get(index).getColumns(),true);
 		
 	}
 	
-	private void printProjectInfo(ArrayList<String> columns) {
+	private void printProjectInfo(ArrayList<String> columns, boolean isCurrent) {
 		int projectId = Integer.parseInt(columns.get(0));
+		String need, expire, success;
+		
+		if(isCurrent) //Para alterar o tempo verbal
+		{
+			need = "needs";
+			expire = "Expires";
+		}
+		else
+		{
+			need = "needed";
+			expire = "Expired";
+		}
+		
+		if(!isCurrent && Integer.parseInt(columns.get(3))<Integer.parseInt(columns.get(4)))
+		{
+			success = "FAILED,";
+		}
+		else if(!isCurrent && Integer.parseInt(columns.get(3))>=Integer.parseInt(columns.get(4)))
+			success = "SUCCEEDED,";
+		else {
+			success = "";
+		}
+		
 		ArrayList<DatabaseRow> table;
 		System.out.println();
 		System.out.println("================================================================");
 		System.out.println();
 		System.out.println("Project - "+columns.get(2)+" : \t"+columns.get(5));
-		System.out.println("Money raised: \t\t\t"+columns.get(3)+" ( needs at least "+columns.get(4)+"$ )"); //TODO por percentagem
-		System.out.println("Expires at: \t\t\t"+columns.get(1));
+		System.out.println("Money raised: \t\t\t"+columns.get(3)+" ("+success+" "+need+" at least "+columns.get(4)+"$ )"); //TODO pôr em percentagem
+		System.out.println(expire+" at: \t\t\t"+columns.get(1));
 		
 		table = servConn.getProjectLevels(projectId);
 		

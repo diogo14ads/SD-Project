@@ -308,10 +308,18 @@ public class ServerConnection {
 		
 	}
 
-	public ArrayList<DatabaseRow> getCurrentProjects() {
-		TCPMessage message = new TCPMessage(TCPMessageType.CURRENT_PROJECTS_REQUEST);
+	public ArrayList<DatabaseRow> getProjects(boolean isCurrent) {
+		TCPMessageType type;
+		TCPMessage message; 
 		TCPMessage response = null;
 		ArrayList<DatabaseRow> projects = null;
+		
+		if(isCurrent)
+			type = TCPMessageType.CURRENT_PROJECTS_REQUEST;
+		else
+			type = TCPMessageType.PAST_PROJECTS_REQUEST;
+		
+		message = new TCPMessage(type);
 		
 		try {
 			oos.writeObject(message);

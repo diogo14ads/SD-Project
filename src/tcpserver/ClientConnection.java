@@ -123,8 +123,30 @@ public class ClientConnection implements Runnable {
 				{
 					currentProjectList(message);
 				}
+				else if(message.getType() == TCPMessageType.PAST_PROJECTS_REQUEST)
+				{
+					pastProjectList(message);
+				}
 			}
 		}
+		
+	}
+
+	private void pastProjectList(TCPMessage message) {
+		
+		TCPMessage response = new TCPMessage(TCPMessageType.PAST_PROJECTS_REQUEST);
+		ArrayList<DatabaseRow> table = null;
+		
+		try {
+			response.setTable(ri.pastProjectsList());
+			oos.writeObject(response);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 		
 	}
 

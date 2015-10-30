@@ -84,6 +84,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 	public ArrayList<DatabaseRow> currentProjectsList() throws RemoteException {
 		return dbCon.currentProjectsList();
 	}
+
+	public ArrayList<DatabaseRow> pastProjectsList() throws RemoteException {
+		return dbCon.pastProjectsList();
+	}
 	
 	public static void main(String[] args) throws RemoteException{
 		RMIInterface ri = new RMIServer();
@@ -91,5 +95,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 		LocateRegistry.createRegistry(4001).rebind("rmi", ri);
 		System.out.println("RMI Server ready...");
 	}
+
 
 }

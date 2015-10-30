@@ -46,4 +46,7 @@ public interface RMIInterface extends Remote {
 
 	public ArrayList<DatabaseRow> currentProjectsList() throws RemoteException;
 
+
+	public ArrayList<DatabaseRow> pastProjectsList() throws RemoteException;
+
 }
