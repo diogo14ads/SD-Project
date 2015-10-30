@@ -150,11 +150,11 @@ public class DatabaseConnection {
 		}
 		
 		try {
-			//statement.executeQuery("set datestyle = 'ISO, DMY'");
+			statement.executeUpdate("set datestyle = 'ISO, DMY'");
 			
 			//Insert na tabela project
-			sqlQuery = "insert into project (id_project,date_start,date_end,project_name,money_raised,project_description) "
-				+ "values (nextval('project_id_seq'),current_timestamp,'"+date+"','"+name+"',0,'"+description+"')";
+			sqlQuery = "insert into project (id_project,date_start,date_end,project_name,money_raised,project_description, is_open) "
+				+ "values (nextval('project_id_seq'),current_timestamp,'"+date+"','"+name+"',0,'"+description+"',true)";
 			statement.executeUpdate(sqlQuery);
 			
 			//insert na tabela manages

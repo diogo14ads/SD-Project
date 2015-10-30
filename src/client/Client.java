@@ -135,7 +135,6 @@ public class Client {
 			if(op.equals("1"))
 			{
 				addLevel(projectId);
-				sc.nextLine(); //flush
 			}
 			else if(op.equals("2"))
 			{
@@ -144,7 +143,6 @@ public class Client {
 			else if(op.equals("3"))
 			{
 				editLevelMenu(projectId);
-				sc.nextLine(); //flush
 			}
 			else if(op.equals("0"))
 			{
@@ -179,6 +177,7 @@ public class Client {
 		
 		System.out.println("Insert goal for the level: ");
 		goal = sc.nextInt();
+		sc.nextLine(); //flush
 		
 		servConn.addLevel(projectId,goal);
 		
@@ -201,7 +200,6 @@ public class Client {
 
 				printEditLevelMenu();
 				
-				sc.nextLine(); //flush
 				op = sc.nextLine();
 				
 				if(op.equals("1"))
@@ -210,7 +208,6 @@ public class Client {
 				}
 				else if(op.equals("2"))
 				{
-
 					removeReward(projectId,levelId);
 				}
 				else if(op.equals("3"))
@@ -265,6 +262,8 @@ public class Client {
 			{
 				try {
 					op = sc.nextInt();
+
+					sc.nextLine(); //flush
 					if(op<0 || op>table.size())
 						System.out.println("Invalid option!\nPlease enter the your option again: ");
 					else
@@ -306,6 +305,7 @@ public class Client {
 		{
 			try{
 				value = sc.nextInt();
+				sc.nextLine(); //flush
 				break;
 			} catch(InputMismatchException e){
 				System.out.println("Invalid Option!\nPlease insert a numeric value: ");
@@ -327,6 +327,7 @@ public class Client {
 		{
 			try{
 				goal = sc.nextInt();
+				sc.nextLine(); //flush
 				break;
 			} catch(InputMismatchException e){
 				System.out.println("Invalid Option!\nPlease insert a numeric value: ");
@@ -370,7 +371,7 @@ public class Client {
 			{
 				try {
 					op = sc.nextInt();
-					
+					sc.nextLine(); //flush
 					if(op<0 || op>table.size())
 						System.out.println("Invalid option!\nPlease enter the your option again: ");
 					else
@@ -415,8 +416,6 @@ public class Client {
 			{
 
 				printManageProjectsMenu();
-				
-				sc.nextLine(); //flush
 				
 				op = sc.nextLine();
 				
@@ -469,7 +468,7 @@ public class Client {
 			{
 				try {
 					op = sc.nextInt();
-					
+					sc.nextLine(); //flush
 					if(op<0 || op>table.size())
 						System.out.println("Invalid option!\nPlease enter the your option again: ");
 					else
@@ -566,6 +565,7 @@ public class Client {
 		//TODO proteger o input
 		System.out.println("Insert the money goal: ");
 		projectData.add(Integer.toString(sc.nextInt()));
+		sc.nextLine(); //flush
 		
 		servConn.createProject(projectData);
 		
