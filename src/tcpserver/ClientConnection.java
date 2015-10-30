@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import common.DatabaseRow;
 import common.RMIInterface;
 import common.TCPMessage;
 import common.TCPMessageType;
@@ -82,9 +83,72 @@ public class ClientConnection implements Runnable {
 				{
 					checkBalance(message);
 				}
+				else if(message.getType() == TCPMessageType.MY_PROJECTS_REQUEST)
+				{
+					myProjectsList(message);
+				}
+				else if(message.getType() == TCPMessageType.PROJECT_LEVELS_REQUEST)
+				{
+					projectLevelsList(message);
+				}
+				else if(message.getType() == TCPMessageType.CHANGE_LEVEL_GOAL_REQUEST)
+				{
+					changeLevelGoal(message);
+				}
 			}
 		}
 		
+	}
+
+	private void changeLevelGoal(TCPMessage message) {
+	
+		int projectId = message.getIntegers().get(0);
+		int levelId = message.getIntegers().get(1);
+		int goal = message.getIntegers().get(2);
+		
+		try {
+			System.out.println(ri.changeLevelGoal(projectId,levelId,goal));
+			//TODO persistencia
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void projectLevelsList(TCPMessage message) {
+		TCPMessage response = new TCPMessage(TCPMessageType.PROJECT_LEVELS_REQUEST);
+		ArrayList<DatabaseRow> table = null;
+		
+		try {
+			response.setTable(ri.projectLevelsList(message.getIntegers().get(0)));
+			
+			oos.writeObject(response);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void myProjectsList(TCPMessage message) {
+		
+		TCPMessage response = new TCPMessage(TCPMessageType.CHECK_BALANCE_REQUEST);
+		ArrayList<DatabaseRow> table = null;
+		
+		try {
+			response.setTable(ri.myProjectsList(activeUser));
+			oos.writeObject(response);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 
 	private void checkBalance(TCPMessage message) {

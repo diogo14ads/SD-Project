@@ -2,6 +2,7 @@ package common;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public interface RMIInterface extends Remote {
 	
@@ -16,5 +17,14 @@ public interface RMIInterface extends Remote {
 
 
 	public int checkBalance(String activeUser) throws RemoteException;
+
+
+	public ArrayList<DatabaseRow> myProjectsList(String email) throws RemoteException;
+
+
+	public ArrayList<DatabaseRow> projectLevelsList(Integer projectId) throws RemoteException;
+
+
+	public boolean changeLevelGoal(int projectId, int levelId, int goal) throws RemoteException;
 
 }

@@ -7,6 +7,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+
+import common.DatabaseRow;
+import javafx.scene.chart.PieChart.Data;
 
 public class DatabaseConnection {
 
@@ -201,6 +205,126 @@ public class DatabaseConnection {
 		
 		
 		return balance;
+	}
+
+	public ArrayList<DatabaseRow> getMyProjectsList(String email) 
+	{
+		ArrayList<DatabaseRow> table = new ArrayList<>();
+		DatabaseRow row = null;
+		ArrayList<String> rowInfo = null;
+		String sqlQuery = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		
+		try {
+			statement = connection.createStatement();
+			
+			sqlQuery = "SELECT p.id_project, p.project_name "
+					+ "FROM user_account u, Project p, Manages m "
+					+ "WHERE u.email = '"+email+"' and u.email = m.email "
+					+ "and p.id_project = m.id_project and is_open = true";
+			
+			resultSet = statement.executeQuery(sqlQuery);
+			
+			while(resultSet.next())
+			{
+				//esta parte está um bocado confusa, mas funciona
+				rowInfo = new ArrayList<>();
+				rowInfo.add(Integer.toString(resultSet.getInt(1)));
+				rowInfo.add(resultSet.getString(2));
+				row = new DatabaseRow(rowInfo);
+				table.add(row);
+			}
+			
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println(table.get(i).getColumns().toString());
+				
+			}
+			
+			System.out.println();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return table;
+	}
+
+	public ArrayList<DatabaseRow> getProjectLevelsList(Integer projectId) {
+
+		ArrayList<DatabaseRow> table = new ArrayList<>();
+		DatabaseRow row = null;
+		ArrayList<String> rowInfo = null;
+		String sqlQuery = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		
+		try {
+			statement = connection.createStatement();
+			
+			sqlQuery = "select level_id, objective "
+					+ "from level "
+					+ "where id_project = "+projectId;
+			
+			resultSet = statement.executeQuery(sqlQuery);
+			
+			while(resultSet.next())
+			{
+				//esta parte está um bocado confusa, mas funciona
+				rowInfo = new ArrayList<>();
+				rowInfo.add(Integer.toString(resultSet.getInt(1)));
+				rowInfo.add(Integer.toString(resultSet.getInt(2)));
+				row = new DatabaseRow(rowInfo);
+				table.add(row);
+			}
+			
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println(table.get(i).getColumns().toString());
+				
+			}
+			
+			System.out.println();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return table;
+	}
+
+	public boolean changeLevelGoal(int projectId, int levelId, int goal) {
+		String sqlQuery = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			System.err.println("SQL: "+e);
+		}
+		sqlQuery = "update level "
+				+ "set objective = "+goal+" "
+				+ "where level_id = "+levelId+" and id_project = "+projectId+"";
+		
+		
+		
+		try {
+			if(statement.executeUpdate(sqlQuery)>0)
+				return true;
+			else
+				return false;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 	//Rascunho

@@ -11,7 +11,12 @@ public class TCPMessage implements Serializable {
 	private TCPMessageType type;
 	private ArrayList<String> strings = null;
 	private ArrayList<Integer> integers = null;
+	private ArrayList<DatabaseRow> table = null;
 	
+	public TCPMessage(ArrayList<DatabaseRow> table) {
+		super();
+		this.table = table;
+	}
 
 	public TCPMessage(TCPMessageType type, ArrayList<String> strings) {
 		super();
@@ -43,6 +48,14 @@ public class TCPMessage implements Serializable {
 
 	public TCPMessageType getType() {
 		return type;
+	}
+	
+	public ArrayList<DatabaseRow> getTable() {
+		return table;
+	}
+
+	public void setTable(ArrayList<DatabaseRow> table) {
+		this.table = table;
 	}
 
 	public void setType(TCPMessageType type) {

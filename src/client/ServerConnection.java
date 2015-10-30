@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import common.DatabaseRow;
 import common.TCPMessage;
 import common.TCPMessageType;
 
@@ -130,6 +131,70 @@ public class ServerConnection {
 	public void sendMessage()
 	{
 		//TODO implementar funçao genérica de envio de mensagens (se houver tempo)
+	}
+
+	public ArrayList<DatabaseRow> getMyProjectList() {
+		TCPMessage message = new TCPMessage(TCPMessageType.MY_PROJECTS_REQUEST);
+		TCPMessage response = null;
+		ArrayList<DatabaseRow> myProjects = null;
+		
+		try {
+			oos.writeObject(message);
+			
+			response=(TCPMessage) ois.readObject();
+			myProjects = response.getTable();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return myProjects;
+		
+		
+	}
+
+	public ArrayList<DatabaseRow> getProjectLevels(int projectId) {
+		TCPMessage message = new TCPMessage(TCPMessageType.PROJECT_LEVELS_REQUEST);
+		TCPMessage response = null;
+		
+		message.getIntegers().add(projectId);
+		
+		try {
+			oos.writeObject(message);
+			
+			response = (TCPMessage) ois.readObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return response.getTable();
+	}
+
+	public void changeGoal(int projectId, int levelId, int goal) {
+		TCPMessage message = new TCPMessage(TCPMessageType.CHANGE_LEVEL_GOAL_REQUEST);
+		
+		message.getIntegers().add(projectId); //só é preciso se o ID do nivel for ZERO(é o objectivo minimo do projecto, tem sempre o ID zero)
+
+		message.getIntegers().add(levelId);
+
+		message.getIntegers().add(goal);
+		
+		try {
+			oos.writeObject(message);
+			
+			//TODO persistencia
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	
