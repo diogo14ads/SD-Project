@@ -135,7 +135,29 @@ public class ClientConnection implements Runnable {
 				{
 					buyReward(message);
 				}
+				else if(message.getType() == TCPMessageType.MY_REWARDS_REQUEST)
+				{
+					getMyRewards(message);
+				}
 			}
+		}
+		
+	}
+
+	private void getMyRewards(TCPMessage message) {
+		TCPMessage response = new TCPMessage(TCPMessageType.MY_REWARDS_REQUEST);
+		ArrayList<DatabaseRow> table = null;
+		
+		try {
+			response.setTable(ri.getMyRewards(activeUser));
+			
+			oos.writeObject(response);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
@@ -152,7 +174,6 @@ public class ClientConnection implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 
 	private void getActiveRewards(TCPMessage message) {

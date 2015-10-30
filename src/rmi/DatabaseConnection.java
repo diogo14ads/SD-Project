@@ -695,6 +695,53 @@ public class DatabaseConnection {
 		}
 		return true;
 	}
+
+	public ArrayList<DatabaseRow> getMyRewards(String activeUser) {
+		ArrayList<DatabaseRow> table = new ArrayList<>();
+		DatabaseRow row = null;
+		ArrayList<String> rowInfo = null;
+		String sqlQuery = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		
+		try {
+			statement = connection.createStatement();
+			
+			sqlQuery = "select r.reward_description, pr.project_name, pr.date_end > current_timestamp, r.value "
+					+ "from pledge p, reward r, project pr "
+					+ "where email_receiver = '"+activeUser+"' and p.reward_id = r.reward_id and pr.id_project = r.id_project;";
+			
+			
+			resultSet = statement.executeQuery(sqlQuery);
+			
+			while(resultSet.next())
+			{
+				//esta parte está um bocado confusa, mas funciona
+				rowInfo = new ArrayList<>();
+				rowInfo.add(resultSet.getString(1)); 	//reward_description
+				rowInfo.add(resultSet.getString(2));	//project_name
+				rowInfo.add(resultSet.getString(3));	//project active?
+				rowInfo.add(Integer.toString(resultSet.getInt(4)));		//value
+				row = new DatabaseRow(rowInfo);
+				table.add(row);
+			}
+			
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println(table.get(i).getColumns().toString());
+				
+			}
+			
+			System.out.println();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return table;
+	}
 	
 	//Rascunho
 	/*

@@ -372,7 +372,26 @@ public class ServerConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public ArrayList<DatabaseRow> checkMyRewards() {
+		TCPMessage message = new TCPMessage(TCPMessageType.MY_REWARDS_REQUEST);
+		TCPMessage response = null;
+		ArrayList<DatabaseRow> table = null;
 		
+		try {
+			oos.writeObject(message);
+			
+			response = (TCPMessage) ois.readObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return response.getTable();
 	}
 
 	

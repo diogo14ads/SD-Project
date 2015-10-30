@@ -599,6 +599,10 @@ public class Client {
 			{
 				System.out.println("Current Balance: "+servConn.checkBalance());
 			}
+			else if(op.equals("2"))
+			{
+				checkRewards();
+			}
 			else if(op.equals("3"))
 			{
 				manageProjectsMenu();
@@ -615,6 +619,27 @@ public class Client {
 	}
 	
 	
+	private void checkRewards() {
+		printMyRewards(servConn.checkMyRewards());
+		
+	}
+
+	private void printMyRewards(ArrayList<DatabaseRow> table) {
+		String status;
+		
+		for(int i=0;i<table.size();i++)
+		{
+			if(table.get(i).getColumns().get(2).equals("t"))
+				status = "Pending";
+			else
+				status = "Successfull";
+			System.out.println((i+1)+": ( "+table.get(i).getColumns().get(3)+"$ ) "+table.get(i).getColumns().get(0)+" | Status: "+status);
+		}
+		
+		System.out.println("\n<Enter> to continue");
+		sc.nextLine();
+	}
+
 	public void launch()
 	{
 		while(true)
