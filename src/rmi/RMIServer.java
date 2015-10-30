@@ -56,6 +56,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 		return dbCon.changeLevelGoal(projectId,levelId,goal);
 		
 	}
+
+	public boolean addLevel(int projectId, int goal) throws RemoteException {
+		return dbCon.addLevel(projectId, goal);
+	}
+
 	
 	public static void main(String[] args) throws RemoteException{
 		RMIInterface ri = new RMIServer();

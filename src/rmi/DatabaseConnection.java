@@ -326,6 +326,34 @@ public class DatabaseConnection {
 		
 		return false;
 	}
+
+	public boolean addLevel(int projectId, int goal) {
+		String sqlQuery = null;
+		//ResultSet result = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+
+			sqlQuery = "insert into level(id_project,level_id,objective) "
+					+ "values ("+projectId+",nextval('level_id_seq'),"+goal+")";
+
+			statement.executeUpdate(sqlQuery);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.err.println("SQL Exception: "+e);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	
 	//Rascunho
 	/*

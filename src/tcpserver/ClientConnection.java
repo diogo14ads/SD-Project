@@ -95,6 +95,31 @@ public class ClientConnection implements Runnable {
 				{
 					changeLevelGoal(message);
 				}
+				else if(message.getType() == TCPMessageType.ADD_LEVEL_REQUEST)
+				{
+					addLevel(message);
+				}
+			}
+		}
+		
+	}
+
+	private void addLevel(TCPMessage message) {
+		
+		int projectId = message.getIntegers().get(0);
+		int goal = message.getIntegers().get(1);
+		//falta a resposta para garantir persistência
+		boolean success = false;
+		
+		
+		
+		if(!message.getIntegers().isEmpty() && message.getIntegers().size()==2)
+		{
+			try {
+				success=ri.addLevel(projectId,goal);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		
@@ -107,7 +132,7 @@ public class ClientConnection implements Runnable {
 		int goal = message.getIntegers().get(2);
 		
 		try {
-			System.out.println(ri.changeLevelGoal(projectId,levelId,goal));
+			ri.changeLevelGoal(projectId,levelId,goal);
 			//TODO persistencia
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block

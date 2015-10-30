@@ -197,6 +197,24 @@ public class ServerConnection {
 		}
 	}
 
+	public void addLevel(int projectId, int goal) {
+		TCPMessage message = new TCPMessage(TCPMessageType.ADD_LEVEL_REQUEST);
+		
+		message.getIntegers().add(projectId);
+
+		message.getIntegers().add(goal);
+		
+		try {
+			oos.writeObject(message);
+			
+			//TODO persistencia
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 	
 
 }

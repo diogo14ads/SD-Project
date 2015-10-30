@@ -122,17 +122,20 @@ public class Client {
 	{
 
 		String op = null;
-		printManageLevelsMenu();
 		
 		
 		
 		while(true)
 		{
+
+			printManageLevelsMenu();
+			
 			op = sc.nextLine();
 			
 			if(op.equals("1"))
 			{
-				
+				addLevel(projectId);
+				sc.nextLine(); //flush
 			}
 			else if(op.equals("2"))
 			{
@@ -141,10 +144,11 @@ public class Client {
 			else if(op.equals("3"))
 			{
 				editLevelMenu(projectId);
+				sc.nextLine(); //flush
 			}
 			else if(op.equals("0"))
 			{
-				
+				break;
 			}
 			else
 			{
@@ -152,9 +156,19 @@ public class Client {
 			}
 		}
 		
-		
 	}
 	
+	private void addLevel(int projectId) {
+		
+		int goal;
+		
+		System.out.println("Insert goal for the level: ");
+		goal = sc.nextInt();
+		
+		servConn.addLevel(projectId,goal);
+		
+	}
+
 	private void editLevelMenu(int projectId) 
 	{
 		String op = null;
@@ -164,7 +178,7 @@ public class Client {
 		{
 			System.out.println("There was an unexpected problem!");
 		}
-		else
+		else if(levelId > 0) //se for zero volta para trás
 		{
 			
 			while(true)
@@ -195,12 +209,8 @@ public class Client {
 				{
 					
 				}
-					
 			}
 		}
-		
-		
-		
 	}
 
 	private void changeGoal(int projectId, int levelId) 
@@ -235,6 +245,7 @@ public class Client {
 			{
 				System.out.println((i+1)+": "+table.get(i).getColumns().get(1));
 			}
+			System.out.println("0: <- Back");
 			System.out.println("Please select a level from 1-"+table.size()+": ");
 			System.out.println();
 			System.out.println();
@@ -256,7 +267,10 @@ public class Client {
 				}
 			}
 			
-			return Integer.parseInt(table.get(op-1).getColumns().get(0)); //para obter o id real do projecto
+			if(op!=0)
+				return Integer.parseInt(table.get(op-1).getColumns().get(0)); //para obter o id real do projecto
+			else
+				return 0;
 			
 		}
 		else if(table.size()==0)
