@@ -33,4 +33,10 @@ public interface RMIInterface extends Remote {
 
 	public boolean addReward(int projectId, int levelId, String description, int value) throws RemoteException;
 
+
+	public ArrayList<DatabaseRow> levelRewardsList(int projectId, int levelId) throws RemoteException;
+
+
+	public boolean removeReward(int rewardId) throws RemoteException;
+
 }

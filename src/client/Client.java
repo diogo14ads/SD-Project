@@ -195,7 +195,8 @@ public class Client {
 				}
 				else if(op.equals("2"))
 				{
-					
+
+					removeReward(projectId,levelId);
 				}
 				else if(op.equals("3"))
 				{
@@ -212,6 +213,70 @@ public class Client {
 			}
 		}
 	}
+
+	private void removeReward(int projectId, int levelId) {
+		// TODO Auto-generated method stub
+		int rewardId = chooseReward(servConn.getLevelRewards(projectId,levelId));
+		
+		if(rewardId < 0)
+		{
+			System.out.println("There was an unexpected problem!");
+		}
+		else
+		{
+			
+			servConn.removeReward(rewardId);
+		}
+	}
+
+	private int chooseReward(ArrayList<DatabaseRow> table) 
+	{
+		int op = -1;
+		
+		if(table != null & table.size()>0)
+		{
+			System.out.println("Rewards: ");
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println((i+1)+": ( "+table.get(i).getColumns().get(0)+"§ ) "+table.get(i).getColumns().get(1));
+			}
+			System.out.println("0: <- Back");
+			System.out.println("Please select a reward from 1-"+table.size()+": ");
+			System.out.println();
+			System.out.println();
+			
+			while(true)
+			{
+				try {
+					op = sc.nextInt();
+					if(op<0 || op>table.size())
+						System.out.println("Invalid option!\nPlease enter the your option again: ");
+					else
+						break;
+				} catch (InputMismatchException e) {
+					System.out.println("Invalid option!\nPlease enter the your option again: ");
+					System.out.println();
+					System.out.println();
+					
+				}
+			}
+			
+			if(op!=0)
+				return Integer.parseInt(table.get(op-1).getColumns().get(0)); //para obter o id real do projecto
+			else
+				return 0;
+			
+		}
+		else if(table.size()==0)
+		{
+			System.out.println("This level does not have rewards"); //isto nunca deve acontecer
+			return 0;
+		}
+		else
+			return -1;
+	}
+
 
 	private void addReward(int projectId, int levelId) {
 		

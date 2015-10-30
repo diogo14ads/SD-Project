@@ -382,6 +382,79 @@ public class DatabaseConnection {
 		}
 		return true;
 	}
+
+	public ArrayList<DatabaseRow> getLevelRewardList(int projectId, int levelId) {
+
+		ArrayList<DatabaseRow> table = new ArrayList<>();
+		DatabaseRow row = null;
+		ArrayList<String> rowInfo = null;
+		String sqlQuery = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		
+		try {
+			statement = connection.createStatement();
+			
+			sqlQuery = "select reward_id, reward_description, value "
+					+ "from reward "
+					+ "where id_project = "+projectId+" and level_id = "+levelId;
+			
+			resultSet = statement.executeQuery(sqlQuery);
+			
+			while(resultSet.next())
+			{
+				//esta parte está um bocado confusa, mas funciona
+				rowInfo = new ArrayList<>();
+				rowInfo.add(Integer.toString(resultSet.getInt(1)));
+				rowInfo.add(resultSet.getString(2));
+				rowInfo.add(Integer.toString(resultSet.getInt(3)));
+				row = new DatabaseRow(rowInfo);
+				table.add(row);
+			}
+			
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println(table.get(i).getColumns().toString());
+				
+			}
+			
+			System.out.println();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return table;
+	}
+
+	public boolean removeReward(int rewardId) {
+		String sqlQuery = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+
+			sqlQuery = "delete from reward "
+					+ "where reward_id = "+rewardId;
+
+			statement.executeUpdate(sqlQuery);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.err.println("SQL Exception: "+e);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	
 	//Rascunho
 	/*

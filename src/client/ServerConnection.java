@@ -236,6 +236,45 @@ public class ServerConnection {
 		}
 	}
 
+	public ArrayList<DatabaseRow> getLevelRewards(int projectId, int levelId) {
+		TCPMessage message = new TCPMessage(TCPMessageType.LEVEL_REWARDS_REQUEST);
+		TCPMessage response = null;
+		
+		message.getIntegers().add(projectId);
+
+		message.getIntegers().add(levelId);
+		
+		try {
+			oos.writeObject(message);
+			
+			response = (TCPMessage) ois.readObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return response.getTable();
+	}
+
+	public void removeReward(int rewardId) {
+		TCPMessage message = new TCPMessage(TCPMessageType.REMOVE_REWARD_REQUEST);
+		
+		message.getIntegers().add(rewardId);
+		
+		try {
+			oos.writeObject(message);
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	
 
 }

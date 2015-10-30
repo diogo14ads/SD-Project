@@ -103,9 +103,53 @@ public class ClientConnection implements Runnable {
 				{
 					addReward(message);
 				}
+				else if(message.getType() == TCPMessageType.LEVEL_REWARDS_REQUEST)
+				{
+					levelRewardsList(message);
+				}
+				else if(message.getType() == TCPMessageType.REMOVE_REWARD_REQUEST)
+				{
+					removeReward(message);
+				}
 			}
 		}
 		
+	}
+
+	private void removeReward(TCPMessage message) {
+		int rewardId = message.getIntegers().get(0);
+		boolean success = false;
+		
+		try {
+			success = ri.removeReward(rewardId);
+			
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void levelRewardsList(TCPMessage message) {
+		TCPMessage response = new TCPMessage(TCPMessageType.LEVEL_REWARDS_REQUEST);
+		ArrayList<DatabaseRow> table = null;
+		int projectId = message.getIntegers().get(0);
+		int levelId = message.getIntegers().get(1);
+		
+		try {
+			response.setTable(ri.levelRewardsList(projectId,levelId));
+			
+			oos.writeObject(response);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void addReward(TCPMessage message) {
@@ -126,8 +170,6 @@ public class ClientConnection implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		
-		System.out.println(success);
 		
 	}
 
