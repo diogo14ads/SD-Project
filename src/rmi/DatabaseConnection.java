@@ -1,5 +1,8 @@
 package rmi;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -7,14 +10,18 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 public class DatabaseConnection {
 
 	private Connection connection;
 	
+	static Properties prop = new Properties();
+
 	public DatabaseConnection()
 	{
 		try {
+			readProperties();
 			this.connection = getDatabaseConnection();
 			System.out.println("Connected to Heroku Database");
 		} catch (URISyntaxException e) {
@@ -43,7 +50,7 @@ public class DatabaseConnection {
 
 	private Connection getDatabaseConnection() throws URISyntaxException, SQLException {
 		
-		URI dbUri = new URI("postgres://fzekibiamscilk:6zSggqjUA1eNrp9zNKT1hrlpdl@ec2-75-101-162-243.compute-1.amazonaws.com:5432/dujiun5jm8qrj");
+		URI dbUri = new URI(prop.getProperty("dbURL"));
 		
 	    String username = dbUri.getUserInfo().split(":")[0];
 	    String password = dbUri.getUserInfo().split(":")[1];
@@ -137,4 +144,26 @@ public class DatabaseConnection {
 	res.next();
 	System.out.println(res.getString("email"));
 	*/
+	
+	public static void readProperties(){
+
+		InputStream input = null;
+
+		try {
+
+			input = new FileInputStream("config.properties");
+			prop.load(input);
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 }

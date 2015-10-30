@@ -1,22 +1,26 @@
 package tcpserver;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
+import java.util.Properties;
 
 import common.RMIInterface;
 
 public class TCPServer {
-
+	
+	static Properties prop = new Properties();
+	
 	public static void main(String[] args) {
 		try{
-			RMIInterface ri = (RMIInterface) LocateRegistry.getRegistry(4001).lookup("rmi");
-			int serverPort = 4000;
-			System.out.println("Listening in port 4000...");
-			ServerSocket listenSocket = new ServerSocket(serverPort);
+			readProperties();
+			RMIInterface ri = (RMIInterface) LocateRegistry.getRegistry(prop.getProperty("rmiRegistry")).lookup(prop.getProperty("rmiLookpup"));
+			System.out.println("Listening in port: " + prop.getProperty("tcpPort")+"...");
+			ServerSocket listenSocket = new ServerSocket(Integer.parseInt(prop.getProperty("tcpPort")));
 			System.out.println("LISTEN SOCKET = "+ listenSocket);
 			
 			while(true)
@@ -34,6 +38,28 @@ public class TCPServer {
 		}
 		
 		
+	}
+	
+	public static void readProperties(){
+
+		InputStream input = null;
+
+		try {
+
+			input = new FileInputStream("config.properties");
+			prop.load(input);
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }

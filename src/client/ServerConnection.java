@@ -1,27 +1,31 @@
 package client;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import common.TCPMessage;
 import common.TCPMessageType;
 
-public class ServerConnection {
+public class ServerConnection{
+	
+	static Properties prop = new Properties();
 
-	final String host = "localhost";
-	final int port = 4000;
 	ObjectOutputStream oos;
 	ObjectInputStream ois;
 	Socket socket;
-	
+		
 	public ServerConnection()
 	{
 		try {
+			readProperties();
 
-			socket = new Socket(host, port);
+			socket = new Socket(prop.getProperty("host"), Integer.parseInt(prop.getProperty("tcpPort")));
 			
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
@@ -92,6 +96,28 @@ public class ServerConnection {
 		else
 			return false;
 		
+	}
+	
+	public static void readProperties(){
+
+		InputStream input = null;
+
+		try {
+
+			input = new FileInputStream("config.properties");
+			prop.load(input);
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }
