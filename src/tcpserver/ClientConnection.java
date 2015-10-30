@@ -119,8 +119,30 @@ public class ClientConnection implements Runnable {
 				{
 					addAdministrator(message);
 				}
+				else if(message.getType() == TCPMessageType.CURRENT_PROJECTS_REQUEST)
+				{
+					currentProjectList(message);
+				}
 			}
 		}
+		
+	}
+
+	private void currentProjectList(TCPMessage message) {
+		
+		TCPMessage response = new TCPMessage(TCPMessageType.CURRENT_PROJECTS_REQUEST);
+		ArrayList<DatabaseRow> table = null;
+		
+		try {
+			response.setTable(ri.currentProjectsList());
+			oos.writeObject(response);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 		
 	}
 

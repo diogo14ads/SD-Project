@@ -192,7 +192,7 @@ public class Client {
 		{
 			System.out.println("There was an unexpected problem!");
 		}
-		else if(levelId > 0) //se for zero volta para trás
+		else if(levelId >= 0) //se for zero volta para trás
 		{
 			
 			while(true)
@@ -251,7 +251,7 @@ public class Client {
 			
 			for(int i=0;i<table.size();i++)
 			{
-				System.out.println((i+1)+": ( "+table.get(i).getColumns().get(2)+"§ ) "+table.get(i).getColumns().get(1));
+				System.out.println((i+1)+": ( "+table.get(i).getColumns().get(2)+"$ ) "+table.get(i).getColumns().get(1));
 			}
 			System.out.println("0: <- Back");
 			System.out.println("Please select a reward from 1-"+table.size()+": ");
@@ -637,6 +637,14 @@ public class Client {
 				{
 					askRegisterData();
 				}
+				else if(op.equals("3"))
+				{
+					viewCurrentProjects();
+				}
+				else if(op.equals("4"))
+				{
+					
+				}
 				else if(op.equals("0"))
 				{
 					servConn.closeConnection();
@@ -645,7 +653,11 @@ public class Client {
 			}
 			
 			else{
-				if(op.equals("3"))
+				if(op.equals("1"))
+				{
+					viewCurrentProjects();
+				}
+				else if(op.equals("3"))
 				{
 					myAccount();
 				}
@@ -662,6 +674,123 @@ public class Client {
 		}
 	}
 	
+	private void viewCurrentProjects() {
+		ArrayList<DatabaseRow> table = servConn.getCurrentProjects();
+		int index = chooseProject(table);
+		
+		printProjectInfo(table.get(index).getColumns());
+		
+	}
+	
+	private void printProjectInfo(ArrayList<String> columns) {
+		int projectId = Integer.parseInt(columns.get(0));
+		ArrayList<DatabaseRow> table;
+		System.out.println();
+		System.out.println("================================================================");
+		System.out.println();
+		System.out.println("Project - "+columns.get(2)+" : \t"+columns.get(5));
+		System.out.println("Money raised: \t\t\t"+columns.get(3)+" ( needs at least "+columns.get(4)+"$ )"); //TODO por percentagem
+		System.out.println("Expires at: \t\t\t"+columns.get(1));
+		
+		table = servConn.getProjectLevels(projectId);
+		
+		printLevelInfo(table,projectId);
+		
+		System.out.println();
+		System.out.println("================================================================");
+		System.out.println();
+		
+		System.out.println("\n<Enter> to contine");
+		sc.nextLine();
+		
+	}
+
+	private void printLevelInfo(ArrayList<DatabaseRow> table, int projectId) {
+		int index;
+		for(index=0; !(table.get(index).getColumns().get(0)).equals("0") ;index++);
+		
+		System.out.println("\nStandard Rewards: ");
+		printRewards(Integer.parseInt(table.get(index).getColumns().get(0)),projectId);
+		System.out.println();
+		
+		if(table.size()>1)
+		{
+			System.out.println("Reward Levels: ");
+		
+			for(int i=0;i<table.size();i++)
+			{
+				if(!table.get(i).getColumns().get(0).equals("0"))
+				{
+					System.out.println("-> "+table.get(i).getColumns().get(1)); //TODO ordenar por valor?
+					printRewards(Integer.parseInt(table.get(i).getColumns().get(0)),projectId);
+				}
+					
+			}
+		}
+		else
+			System.out.println("This projects does not have reward levels");
+		
+	}
+
+	private void printRewards(int levelId, int projectId) {
+		ArrayList<DatabaseRow> table = servConn.getLevelRewards(projectId,levelId);
+		
+		if(table.size() == 0 )
+			System.out.println("- No Rewards");
+		
+		for(int i=0;i<table.size();i++)
+		{
+			System.out.println((i+1)+": ( "+table.get(i).getColumns().get(2)+"$ ) "+table.get(i).getColumns().get(1));
+		}
+		
+	}
+
+	private int chooseProject(ArrayList<DatabaseRow> table) {
+		int op = -1;
+		
+		if(table!= null && table.size()>0)
+		{
+			System.out.println("Projects:");
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println((i+1)+": \t( "+table.get(i).getColumns().get(1)+"$ ) \t"+table.get(i).getColumns().get(2)+" ");
+			}
+			System.out.println("Please select a project from 1-"+table.size()+": ");
+			System.out.println();
+			System.out.println();
+			
+			while(true)
+			{
+				try {
+					op = sc.nextInt();
+					sc.nextLine(); //flush
+					if(op<0 || op>table.size())
+						System.out.println("Invalid option!\nPlease enter the your option again: ");
+					else
+						break;
+				} catch (InputMismatchException e) {
+					System.out.println("Invalid option!\nPlease enter the your option again: ");
+					System.out.println();
+					System.out.println();
+					
+				}
+			}
+			
+			return op-1; //para obter o id real do projecto
+			
+		}
+		else if(table.size()==0)
+		{
+			System.out.println("You don't have any projects.");
+			return -1;
+		}
+		else {
+			return -2;
+		}
+		//TODO tratar erros, e simplificar este funçao
+	}
+
 	public boolean isDate(String date)
 	{
 		boolean result = false;

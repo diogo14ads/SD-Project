@@ -43,4 +43,7 @@ public interface RMIInterface extends Remote {
 
 	public boolean addAdministrator(int projectId, String email) throws RemoteException;
 
+
+	public ArrayList<DatabaseRow> currentProjectsList() throws RemoteException;
+
 }

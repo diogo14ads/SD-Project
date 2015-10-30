@@ -519,6 +519,55 @@ public class DatabaseConnection {
 		}
 		return true;
 	}
+
+	public ArrayList<DatabaseRow> currentProjectsList() {
+		ArrayList<DatabaseRow> table = new ArrayList<>();
+		DatabaseRow row = null;
+		ArrayList<String> rowInfo = null;
+		String sqlQuery = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		
+		try {
+			statement = connection.createStatement();
+			
+			sqlQuery = "SELECT p.id_project,p.date_end, p.project_name, p.money_raised, l.objective, p.project_description "
+					+ "from project p, level l "
+					+ "where l.id_project = p.id_project and l.level_id=0 and p.date_end > current_timestamp";
+			
+			
+			resultSet = statement.executeQuery(sqlQuery);
+			
+			while(resultSet.next())
+			{
+				//esta parte está um bocado confusa, mas funciona
+				rowInfo = new ArrayList<>();
+				rowInfo.add(Integer.toString(resultSet.getInt(1))); 	//project id
+				rowInfo.add(resultSet.getString(2));					//date_end
+				rowInfo.add(resultSet.getString(3));					//project name
+				rowInfo.add(Integer.toString(resultSet.getInt(4)));		//money raise
+				rowInfo.add(Integer.toString(resultSet.getInt(5)));		//project objective
+				rowInfo.add(resultSet.getString(6));		//project description
+				row = new DatabaseRow(rowInfo);
+				table.add(row);
+			}
+			
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println(table.get(i).getColumns().toString());
+				
+			}
+			
+			System.out.println();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return table;
+	}
 	
 	//Rascunho
 	/*

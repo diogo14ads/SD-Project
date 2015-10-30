@@ -80,6 +80,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 	public boolean addAdministrator(int projectId, String email) throws RemoteException {
 		return dbCon.addAdministrator(projectId,email);
 	}
+
+	public ArrayList<DatabaseRow> currentProjectsList() throws RemoteException {
+		return dbCon.currentProjectsList();
+	}
 	
 	public static void main(String[] args) throws RemoteException{
 		RMIInterface ri = new RMIServer();

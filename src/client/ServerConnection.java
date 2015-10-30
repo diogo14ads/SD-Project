@@ -308,6 +308,27 @@ public class ServerConnection {
 		
 	}
 
+	public ArrayList<DatabaseRow> getCurrentProjects() {
+		TCPMessage message = new TCPMessage(TCPMessageType.CURRENT_PROJECTS_REQUEST);
+		TCPMessage response = null;
+		ArrayList<DatabaseRow> projects = null;
+		
+		try {
+			oos.writeObject(message);
+			
+			response=(TCPMessage) ois.readObject();
+			projects = response.getTable();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return projects;
+	}
+
 	
 
 }
