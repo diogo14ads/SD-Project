@@ -290,6 +290,24 @@ public class ServerConnection {
 		
 	}
 
+	public void addAdministrator(int projectId, String email) {
+		TCPMessage message = new TCPMessage(TCPMessageType.ADD_ADMIN_REQUEST);
+		
+		message.getIntegers().add(projectId);
+
+		message.getStrings().add(email);
+		
+		try {
+			oos.writeObject(message);
+			
+			//TODO persistencia
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 	
 
 }

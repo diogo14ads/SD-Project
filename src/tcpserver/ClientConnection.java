@@ -115,6 +115,29 @@ public class ClientConnection implements Runnable {
 				{
 					removeLevel(message);
 				}
+				else if(message.getType() == TCPMessageType.ADD_ADMIN_REQUEST)
+				{
+					addAdministrator(message);
+				}
+			}
+		}
+		
+	}
+
+	private void addAdministrator(TCPMessage message) {
+		int projectId = message.getIntegers().get(0);
+		String email = message.getStrings().get(0);
+		//falta a resposta para garantir persistência
+		boolean success = false;
+		
+		if(!message.getIntegers().isEmpty() && !message.getStrings().isEmpty() 
+				&& message.getIntegers().size()==1 && message.getStrings().size()==1)
+		{
+			try {
+				success=ri.addAdministrator(projectId,email);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		

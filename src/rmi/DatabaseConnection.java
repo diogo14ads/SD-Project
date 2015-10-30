@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import com.sun.xml.internal.bind.v2.model.core.ID;
+
 import common.DatabaseRow;
 import javafx.scene.chart.PieChart.Data;
 
@@ -480,6 +482,34 @@ public class DatabaseConnection {
 
 			statement.executeUpdate(sqlQuery);
 			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.err.println("SQL Exception: "+e);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public boolean addAdministrator(int projectId, String email) {
+		String sqlQuery = null;
+		//ResultSet result = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+
+			sqlQuery = "insert into manages(id_project,email) "
+					+ "values ("+projectId+",'"+email+"')";
+
+			statement.executeUpdate(sqlQuery);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

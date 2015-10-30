@@ -251,7 +251,7 @@ public class Client {
 			
 			for(int i=0;i<table.size();i++)
 			{
-				System.out.println((i+1)+": ( "+table.get(i).getColumns().get(0)+"§ ) "+table.get(i).getColumns().get(1));
+				System.out.println((i+1)+": ( "+table.get(i).getColumns().get(2)+"§ ) "+table.get(i).getColumns().get(1));
 			}
 			System.out.println("0: <- Back");
 			System.out.println("Please select a reward from 1-"+table.size()+": ");
@@ -429,7 +429,7 @@ public class Client {
 		        }
 		        else if(op.equals("3"))
 		        {
-		        	
+		        	addAdministrator(projectId);
 		        }
 				else if (op.equals("0")) {
 					break;
@@ -449,6 +449,17 @@ public class Client {
 		
 	}
 	
+	private void addAdministrator(int projectId) {
+		String email;
+		int value;
+		
+		System.out.println("Insert the email of the new admnistrator: ");
+		email = sc.nextLine();
+		
+		servConn.addAdministrator(projectId,email);
+		
+	}
+
 	private int chooseMyProject(ArrayList<DatabaseRow> table) {
 		int op = -1;
 		
