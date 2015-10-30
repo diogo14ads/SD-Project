@@ -337,6 +337,44 @@ public class ServerConnection {
 		return projects;
 	}
 
+	public ArrayList<DatabaseRow> getActiveRewards(int projectId) {
+		TCPMessage message = new TCPMessage(TCPMessageType.ACTIVE_REWARDS_REQUEST);
+		TCPMessage response = null;
+		
+		message.getIntegers().add(projectId);
+		
+		try {
+			oos.writeObject(message);
+			
+			response = (TCPMessage) ois.readObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return response.getTable();
+	}
+
+	public void buyReward(int rewardId) {
+		TCPMessage message = new TCPMessage(TCPMessageType.BUY_REWARD_REQUEST);
+		
+		message.getIntegers().add(rewardId);
+		
+		try {
+			oos.writeObject(message);
+			
+			//TODO persistencia
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 	
 
 }

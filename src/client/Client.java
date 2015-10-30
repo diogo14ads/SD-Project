@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Scanner;
 
 import common.DatabaseRow;
+import javafx.scene.chart.PieChart.Data;
 
 public class Client {
 	ServerConnection servConn;
@@ -277,7 +278,7 @@ public class Client {
 			}
 			
 			if(op!=0)
-				return Integer.parseInt(table.get(op-1).getColumns().get(0)); //para obter o id real do projecto
+				return Integer.parseInt(table.get(op-1).getColumns().get(0)); //para obter o id real da reward
 			else
 				return 0;
 			
@@ -697,6 +698,7 @@ public class Client {
 	private void printProjectInfo(ArrayList<String> columns, boolean isCurrent) {
 		int projectId = Integer.parseInt(columns.get(0));
 		String need, expire, success;
+		String pledge;
 		
 		if(isCurrent) //Para alterar o tempo verbal
 		{
@@ -723,9 +725,9 @@ public class Client {
 		System.out.println();
 		System.out.println("================================================================");
 		System.out.println();
-		System.out.println("Project - "+columns.get(2)+" : \t"+columns.get(5));
-		System.out.println("Money raised: \t\t\t"+columns.get(3)+" ("+success+" "+need+" at least "+columns.get(4)+"$ )"); //TODO pôr em percentagem
-		System.out.println(expire+" at: \t\t\t"+columns.get(1));
+		System.out.println("Project - "+columns.get(2)+" : \t\t"+columns.get(5));
+		System.out.println("Money raised: \t\t\t\t"+columns.get(3)+" ("+success+" "+need+" at least "+columns.get(4)+"$ )"); //TODO pôr em percentagem
+		System.out.println(expire+" at: \t\t\t\t"+columns.get(1));
 		
 		table = servConn.getProjectLevels(projectId);
 		
@@ -735,8 +737,37 @@ public class Client {
 		System.out.println("================================================================");
 		System.out.println();
 		
-		System.out.println("\n<Enter> to contine");
-		sc.nextLine();
+		if(isCurrent)
+		{
+			System.out.println("Do you want to pledge money for this project? ( (Y)es / (N)o )");
+			while(true)
+			{
+				pledge = sc.nextLine();
+				if(pledge.toUpperCase().equals("Y"))
+				{
+					pledgeMoney(projectId);
+					break;
+				}
+				else if(pledge.toUpperCase().equals("N"))
+					break;
+				else
+					System.out.println("Please answer (Y)es or (N)o: ");
+					
+			}
+		}
+		else
+		{
+			System.out.println("\n<Enter> to continue");
+			sc.nextLine();
+		}
+		
+		
+	}
+
+	private void pledgeMoney(int projectId) {
+		int rewardId = chooseReward(servConn.getActiveRewards(projectId));
+		
+		servConn.buyReward(rewardId);
 		
 	}
 
@@ -759,7 +790,6 @@ public class Client {
 					System.out.println("-> "+table.get(i).getColumns().get(1)); //TODO ordenar por valor?
 					printRewards(Integer.parseInt(table.get(i).getColumns().get(0)),projectId);
 				}
-					
 			}
 		}
 		else

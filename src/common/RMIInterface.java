@@ -49,4 +49,10 @@ public interface RMIInterface extends Remote {
 
 	public ArrayList<DatabaseRow> pastProjectsList() throws RemoteException;
 
+
+	public ArrayList<DatabaseRow> activeRewardsList(int projectId) throws RemoteException;
+
+
+	public boolean buyReward(int rewardId, String email) throws RemoteException;
+
 }

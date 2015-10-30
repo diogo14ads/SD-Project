@@ -617,6 +617,84 @@ public class DatabaseConnection {
 		
 		return table;
 	}
+
+	public ArrayList<DatabaseRow> activeRewardsList(int projectId) {
+		ArrayList<DatabaseRow> table = new ArrayList<>();
+		DatabaseRow row = null;
+		ArrayList<String> rowInfo = null;
+		String sqlQuery = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		
+		try {
+			statement = connection.createStatement();
+			
+			sqlQuery = "select reward_id, reward_description, value "
+					+ "from reward "
+					+ "where id_project = "+projectId+" "
+					+ "and level_id in (select level_id from level "
+									+ "where id_project = "+projectId+" "
+									+ "and objective <= (select money_raised "
+									+ "from project "
+									+ "where id_project = "+projectId+"))";
+			
+			resultSet = statement.executeQuery(sqlQuery);
+			
+			while(resultSet.next())
+			{
+				//esta parte está um bocado confusa, mas funciona
+				rowInfo = new ArrayList<>();
+				rowInfo.add(Integer.toString(resultSet.getInt(1)));	//reward_id
+				rowInfo.add(resultSet.getString(2));				//reward description
+				rowInfo.add(Integer.toString(resultSet.getInt(3)));	//reward value
+				row = new DatabaseRow(rowInfo);
+				table.add(row);
+			}
+			
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println(table.get(i).getColumns().toString());
+				
+			}
+			
+			System.out.println();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return table;
+	}
+
+	public boolean buyReward(int rewardId, String email) {
+		String sqlQuery = null;
+		//ResultSet result = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+
+			sqlQuery = "insert into pledge(pledge_id,email_buyer, reward_id, email_receiver) "
+					+ "values (nextval('pledge_id_seq'),'"+email+"',"+rewardId+",'"+email+"')";
+
+			statement.executeUpdate(sqlQuery);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.err.println("SQL Exception: "+e);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	
 	//Rascunho
 	/*
