@@ -185,12 +185,12 @@ public class Client {
 	{
 		String op = null;
 		int levelId = chooseLevel(servConn.getProjectLevels(projectId), true);
-		
-		if(levelId < 0)
+		System.out.println(levelId);
+		if(levelId == -2)
 		{
 			System.out.println("There was an unexpected problem!");
 		}
-		else if(levelId >= 0) //se for zero volta para trás
+		else if(levelId >= 0) //se for igual a -1, volta para trás
 		{
 			
 			while(true)
@@ -234,7 +234,6 @@ public class Client {
 		}
 		else
 		{
-			
 			servConn.removeReward(rewardId);
 		}
 	}
@@ -385,16 +384,16 @@ public class Client {
 			if(op!=0)
 				return Integer.parseInt(table.get(op-1).getColumns().get(0)); //para obter o id real do projecto
 			else
-				return 0;
+				return -1;
 			
 		}
 		else if(table.size()==0)
 		{
 			System.out.println("This project does not have reward levels"); //isto nunca deve acontecer
-			return 0;
+			return -1;
 		}
 		else
-			return -1;
+			return -2;
 		
 	}
 	
@@ -424,6 +423,7 @@ public class Client {
 		        else if(op.equals("2"))
 		        {
 		        	cancelProject(projectId);
+		        	break;
 		        }
 		        else if(op.equals("3"))
 		        {
@@ -862,7 +862,10 @@ public class Client {
 	private void pledgeMoney(int projectId) {
 		int rewardId = chooseReward(servConn.getActiveRewards(projectId));
 		
-		servConn.buyReward(rewardId);
+		if(rewardId > 0)
+			servConn.buyReward(rewardId);
+		else
+			System.out.println("reward_id: "+rewardId);
 		
 	}
 

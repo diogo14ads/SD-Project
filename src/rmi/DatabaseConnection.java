@@ -152,6 +152,9 @@ public class DatabaseConnection {
 		}
 		
 		try {
+			
+			connection.setAutoCommit(false);
+			
 			statement.executeUpdate("set datestyle = 'ISO, DMY'");
 			
 			//Insert na tabela project
@@ -169,12 +172,23 @@ public class DatabaseConnection {
 					+ "values (currval('project_id_seq'),0,"+goal+")";
 			statement.executeUpdate(sqlQuery);
 			
-			
+			connection.commit();
+			connection.setAutoCommit(true);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			System.err.println("SQL Exception: "+e);
 			e.printStackTrace();
+			if(connection != null)
+			{
+				System.err.println("Rolling back the transaction");
+			}
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			return false;
 		}
 		return true;
@@ -470,7 +484,8 @@ public class DatabaseConnection {
 		}
 		
 		try {
-			
+
+			connection.setAutoCommit(false);
 
 			sqlQuery = "delete from reward "
 					+ "where level_id = "+levelId;
@@ -482,11 +497,25 @@ public class DatabaseConnection {
 
 			statement.executeUpdate(sqlQuery);
 			
+			connection.commit();
+
+			connection.setAutoCommit(true);
+			
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			System.err.println("SQL Exception: "+e);
+			if(connection != null)
+			{
+				System.err.println("Rolling back the transaction");
+			}
 			e.printStackTrace();
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			return false;
 		}
 		return true;
@@ -636,7 +665,8 @@ public class DatabaseConnection {
 									+ "where id_project = "+projectId+" "
 									+ "and objective <= (select money_raised "
 									+ "from project "
-									+ "where id_project = "+projectId+"))";
+									+ "where id_project = "+projectId+"))"
+					+ "or level_id = 0";
 			
 			resultSet = statement.executeQuery(sqlQuery);
 			
@@ -682,15 +712,50 @@ public class DatabaseConnection {
 		
 		try {
 
+			connection.setAutoCommit(false);
+			
 			sqlQuery = "insert into pledge(pledge_id,email_buyer, reward_id, email_receiver) "
 					+ "values (nextval('pledge_id_seq'),'"+email+"',"+rewardId+",'"+email+"')";
 
 			statement.executeUpdate(sqlQuery);
 			
+			sqlQuery = "update user_account "
+					+ "set balance = (balance - (select value "
+											+ "from reward "
+											+ "where reward_id = "+rewardId+")) "
+					+ "where email = '"+email+"'";
+			
+			statement.executeUpdate(sqlQuery);
+			
+			sqlQuery = "update project "
+					+ "set money_raised = money_raised + (select value "
+														+ " from reward "
+														+ "where reward_id = "+rewardId+") "
+					+ "where id_project = (select id_project "
+											+ "from reward "
+											+ "where reward_id = "+rewardId+")";
+			
+			statement.executeUpdate(sqlQuery);
+			
+			connection.commit();
+			connection.setAutoCommit(true);
+			
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			System.err.println("SQL Exception: "+e);
 			e.printStackTrace();
+			if(connection != null)
+			{
+				System.err.println("Rolling back the transaction");
+				try {
+					connection.rollback();
+					connection.setAutoCommit(true);
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 			return false;
 		}
 		return true;
@@ -839,7 +904,7 @@ public class DatabaseConnection {
 			System.err.println("SQL Exception: "+e);
 			if(connection != null)
 			{
-				System.err.println("Rolling back transaction");
+				System.err.println("Rolling back the transaction");
 				try {
 					connection.rollback();
 				} catch (SQLException e1) {
