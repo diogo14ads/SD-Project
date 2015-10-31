@@ -930,7 +930,7 @@ public class DatabaseConnection {
 		return true;
 	}
 
-	public boolean sendMessageProject(int projectId, String activeUser, String msg) {
+	public boolean sendMessage(int projectId, String activeUser, String msg) {
 		String sqlQuery = null;
 		//ResultSet result = null;
 		Statement statement = null;
@@ -956,6 +956,62 @@ public class DatabaseConnection {
 			return false;
 		}
 		return true;
+	}
+	
+	/*
+	 * */
+
+	public ArrayList<DatabaseRow> getMyMessages(String activeUser) {
+		ArrayList<DatabaseRow> table = new ArrayList<>();
+		DatabaseRow row = null;
+		ArrayList<String> rowInfo = null;
+		String sqlQuery = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		
+		try {
+			statement = connection.createStatement();
+			
+			sqlQuery = "select text,message_date,message_id,email,id_project "
+					+ "from message "
+					+ "where id_project in (select id_project "
+										+ "from project "
+										+ "where id_project in (select id_project "
+															+ "from manages "
+															+ "where email = '"+activeUser+"')) "
+					+ "or email = '"+activeUser+"'";
+			
+			
+			resultSet = statement.executeQuery(sqlQuery);
+			
+			while(resultSet.next())
+			{
+				//esta parte está um bocado confusa, mas funciona
+				rowInfo = new ArrayList<>();
+				rowInfo.add(resultSet.getString(1)); 	//text
+				rowInfo.add(resultSet.getString(2));	//message_date
+				rowInfo.add(Integer.toString(resultSet.getInt(3)));		//messageId
+				rowInfo.add(resultSet.getString(4));	//email
+				rowInfo.add(Integer.toString(resultSet.getInt(5)));	//id_project
+				row = new DatabaseRow(rowInfo);
+				table.add(row);
+			}
+			
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println(table.get(i).getColumns().toString());
+				
+			}
+			
+			System.out.println();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return table;
 	}
 	
 	//Rascunho

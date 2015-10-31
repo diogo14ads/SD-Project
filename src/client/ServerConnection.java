@@ -24,6 +24,8 @@ public class ServerConnection {
 
 			socket = new Socket(host, port);
 			
+			System.out.println(socket.isClosed());
+			
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
 			
@@ -424,7 +426,7 @@ public class ServerConnection {
 	}
 
 	public void sendMessageProject(int projectId, String msg) {
-		TCPMessage message = new TCPMessage(TCPMessageType.SEND_MESSAGE_REQUEST);
+		TCPMessage message = new TCPMessage(TCPMessageType.MESSAGE_PROJECT_REQUEST);
 		
 		message.getIntegers().add(projectId);
 		message.getStrings().add(msg);
@@ -438,6 +440,44 @@ public class ServerConnection {
 			e.printStackTrace();
 		}
 		
+	}
+
+	public ArrayList<DatabaseRow> getMyMessages() {
+		TCPMessage message = new TCPMessage(TCPMessageType.MY_MESSAGES_REQUEST);
+		TCPMessage response = null;
+		
+		try {
+			oos.writeObject(message);
+
+			response = (TCPMessage) ois.readObject();
+			
+			//TODO persistencia
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return response.getTable();
+	}
+
+	public void sendMessageUser(int projectId, String email, String msg) {
+		TCPMessage message = new TCPMessage(TCPMessageType.MESSAGE_USER_REQUEST);
+		
+		message.getIntegers().add(projectId);
+		message.getStrings().add(email);
+		message.getStrings().add(msg);
+		
+		try {
+			oos.writeObject(message);
+			
+			//TODO persistencia
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	

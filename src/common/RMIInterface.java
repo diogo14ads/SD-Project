@@ -67,4 +67,10 @@ public interface RMIInterface extends Remote {
 
 	public boolean sendMessageProject(int projectId, String activeUser, String msg) throws RemoteException;
 
+
+	public ArrayList<DatabaseRow> getMyMessages(String activeUser) throws RemoteException;
+
+
+	public boolean sendMessageUser(int projectId, String email, String msg) throws RemoteException;
+
 }

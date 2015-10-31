@@ -24,7 +24,7 @@ public class TCPServer {
 				Socket clientSocket = listenSocket.accept();
 				System.out.println("CLIENT_SOCKET (created at accept())="+ clientSocket);
 				
-				(new ClientConnection(clientSocket,ri)).run(); //Client Thread
+				new ClientConnection(clientSocket,ri); //Client Thread
 				
 			}
 		} catch(IOException io) {

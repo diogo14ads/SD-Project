@@ -15,12 +15,15 @@ public class Client {
 	ServerConnection servConn;
 	Scanner sc;
 	boolean loggedIn;
+	String loggedUser;
 	
 	public Client()
 	{
 		this.servConn = new ServerConnection();
 		this.sc = new Scanner(System.in);
 		this.loggedIn = false;
+		this.loggedUser = null;
+		
 	}
 	
 	public void printGuestMenu()
@@ -59,7 +62,7 @@ public class Client {
 	}
 	
 	private void printMyMessagesMenu() {
-		System.out.println("My Account");
+		System.out.println("My Messages");
         System.out.println("---------------------------");
         System.out.println("1. Read Messages");
         System.out.println("2. Send Message");
@@ -540,6 +543,7 @@ public class Client {
 		{
 			System.out.println("Valid");
 			loggedIn = true;
+			loggedUser = loginData.get(0);
 		}
 		else
 		{
@@ -564,6 +568,7 @@ public class Client {
 		{
 			System.out.println("Register successfull.");
 			loggedIn = true;
+			loggedUser = registerData.get(1);
 		}
 		else
 		{
@@ -787,6 +792,7 @@ public class Client {
 				else if(op.equals("0"))
 				{
 					loggedIn=false;
+					loggedUser = null;
 				}
 			}
 		}
@@ -802,14 +808,100 @@ public class Client {
 			
 			if(op.equals("1"))
 			{
-				System.out.println();
+				readMessage();
 			}
 			else if(op.equals("2"))
 			{
 				sendMessageProject();
 			}
+			else if(op.equals("0"))
+			{
+				break;
+			}
 			
 		}
+		
+	}
+
+	private void readMessage() {
+		ArrayList<DatabaseRow> table = servConn.getMyMessages();
+		int index;
+		String msg;
+		
+		index = chooseMessage(table);
+		
+		if(index>=0)
+		{
+			System.out.println("Type the message you want to send: ");
+			msg = sc.nextLine();
+			
+			if(table.get(index).getColumns().get(3).equals(loggedUser))
+			{
+				servConn.sendMessageProject(Integer.parseInt(table.get(index).getColumns().get(4)), msg);
+			}
+			else
+			{
+				servConn.sendMessageUser(Integer.parseInt(table.get(index).getColumns().get(4)),table.get(index).getColumns().get(3),msg);
+			}
+		}
+		
+		
+		
+	}
+
+	private int chooseMessage(ArrayList<DatabaseRow> table) {
+		
+		/*		Table content
+		 * 		rowInfo.add(resultSet.getString(1)); 	//text
+				rowInfo.add(resultSet.getString(2));	//message_date
+				rowInfo.add(Integer.toString(resultSet.getInt(3)));		//messageId
+				rowInfo.add(resultSet.getString(4));	//email
+				rowInfo.add(Integer.toString(resultSet.getInt(5)));	//id_project
+		 */
+		
+		int op = -1;
+		
+		if(table != null & table.size()>0)
+		{
+			System.out.println("Rewards: ");
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println((i+1)+": ( "+table.get(i).getColumns().get(1)+" ) "+table.get(i).getColumns().get(3)+": "+table.get(i).getColumns().get(0));
+			}
+			System.out.println("0: <- Back");
+			System.out.println("Please select a message to respond, from 1-"+table.size()+": ");
+			System.out.println();
+			System.out.println();
+			
+			while(true)
+			{
+				try {
+					op = sc.nextInt();
+
+					sc.nextLine(); //flush
+					if(op<0 || op>table.size())
+						System.out.println("Invalid option!\nPlease enter the your option again: ");
+					else
+						break;
+				} catch (InputMismatchException e) {
+					System.out.println("Invalid option!\nPlease enter the your option again: ");
+					System.out.println();
+					System.out.println();
+					
+				}
+			}
+			
+			return op-1; //para obter o id real da pledge
+			
+		}
+		else if(table.size()==0)
+		{
+			System.out.println("You don't have messages.");
+			return -1;
+		}
+		else
+			return -2;
 		
 	}
 

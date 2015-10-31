@@ -14,7 +14,7 @@ import common.RMIInterface;
 import common.TCPMessage;
 import common.TCPMessageType;
 
-public class ClientConnection implements Runnable {
+public class ClientConnection extends Thread {
 	
 	private Socket socket;
 	private RMIInterface ri;
@@ -35,6 +35,7 @@ public class ClientConnection implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.start();
 	}
 
 	@Override
@@ -147,11 +148,53 @@ public class ClientConnection implements Runnable {
 				{
 					cancelProject(message);
 				}
-				else if(message.getType() == TCPMessageType.SEND_MESSAGE_REQUEST)
+				else if(message.getType() == TCPMessageType.MESSAGE_PROJECT_REQUEST)
 				{
 					sendMessageProject(message);
 				}
+				else if(message.getType() == TCPMessageType.MY_MESSAGES_REQUEST)
+				{
+					getMyMessages(message);
+				}
+				else if(message.getType() == TCPMessageType.MESSAGE_USER_REQUEST)
+				{
+					sendMessageUser(message);
+				}
 			}
+		}
+		
+	}
+
+	private void sendMessageUser(TCPMessage message) {
+		boolean success;
+		
+		int projectId = message.getIntegers().get(0);
+		String email = message.getStrings().get(0);
+		String msg = message.getStrings().get(1);
+		
+		try {
+			success = ri.sendMessageUser(projectId,email, msg);
+
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void getMyMessages(TCPMessage message) {
+		TCPMessage response = new TCPMessage(TCPMessageType.MY_MESSAGES_REQUEST);
+		ArrayList<DatabaseRow> table = null;
+		
+		try {
+			response.setTable(ri.getMyMessages(activeUser));
+			
+			oos.writeObject(response);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
@@ -531,7 +574,7 @@ public class ClientConnection implements Runnable {
 		if(success == true)
 		{
 			response.getStrings().add("1");
-			activeUser = registerData.get(0);
+			activeUser = registerData.get(1);
 		}
 		else {
 			response.getStrings().add("0");

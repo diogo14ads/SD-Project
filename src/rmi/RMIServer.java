@@ -111,15 +111,23 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 	}
 	
 	public boolean sendMessageProject(int projectId, String activeUser, String msg) throws RemoteException {
-		return dbCon.sendMessageProject(projectId,activeUser,msg);
+		return dbCon.sendMessage(projectId,activeUser,msg);
 	}
+
+	public ArrayList<DatabaseRow> getMyMessages(String activeUser) throws RemoteException {
+		return dbCon.getMyMessages(activeUser);
+	}
+
+	public boolean sendMessageUser(int projectId, String email, String msg) throws RemoteException {
+		return dbCon.sendMessage(projectId,email,msg);
+	}
+	
 	public static void main(String[] args) throws RemoteException{
 		RMIInterface ri = new RMIServer();
 		
 		LocateRegistry.createRegistry(4001).rebind("rmi", ri);
 		System.out.println("RMI Server ready...");
 	}
-
 
 
 }
