@@ -423,6 +423,23 @@ public class ServerConnection {
 		
 	}
 
+	public void sendMessageProject(int projectId, String msg) {
+		TCPMessage message = new TCPMessage(TCPMessageType.SEND_MESSAGE_REQUEST);
+		
+		message.getIntegers().add(projectId);
+		message.getStrings().add(msg);
+		
+		try {
+			oos.writeObject(message);
+			
+			//TODO persistencia
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 	
 
 }

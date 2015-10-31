@@ -147,7 +147,27 @@ public class ClientConnection implements Runnable {
 				{
 					cancelProject(message);
 				}
+				else if(message.getType() == TCPMessageType.SEND_MESSAGE_REQUEST)
+				{
+					sendMessageProject(message);
+				}
 			}
+		}
+		
+	}
+
+	private void sendMessageProject(TCPMessage message) {
+		boolean success;
+		
+		int projectId = message.getIntegers().get(0);
+		String msg = message.getStrings().get(0);
+		
+		try {
+			success = ri.sendMessageProject(projectId,activeUser, msg);
+
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}

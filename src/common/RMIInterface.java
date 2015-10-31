@@ -64,4 +64,7 @@ public interface RMIInterface extends Remote {
 
 	public boolean cancelProject(int projectId) throws RemoteException;
 
+
+	public boolean sendMessageProject(int projectId, String activeUser, String msg) throws RemoteException;
+
 }

@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Scanner;
 
 import common.DatabaseRow;
+import javafx.scene.chart.PieChart.Data;
 
 public class Client {
 	ServerConnection servConn;
@@ -55,6 +56,20 @@ public class Client {
         System.out.print("Please select an option from 1-2");
         System.out.println("");
         System.out.println("");
+	}
+	
+	private void printMyMessagesMenu() {
+		System.out.println("My Account");
+        System.out.println("---------------------------");
+        System.out.println("1. Read Messages");
+        System.out.println("2. Send Message");
+        System.out.println("0. <- Back");
+        System.out.println("----------------------------");
+        System.out.println("");
+        System.out.print("Please select an option from 0-2");
+        System.out.println("");
+        System.out.println("");
+		
 	}
 	
 	public void printMyAccountMenu()
@@ -765,15 +780,60 @@ public class Client {
 				{
 					askProjectData();
 				}
+				else if(op.equals("5"))
+				{
+					myMessages();
+				}
 				else if(op.equals("0"))
 				{
 					loggedIn=false;
 				}
 			}
-			
 		}
 	}
-	
+
+	private void myMessages() {
+		String op;
+		while(true)
+		{
+			printMyMessagesMenu();
+			
+			op = sc.nextLine();
+			
+			if(op.equals("1"))
+			{
+				System.out.println();
+			}
+			else if(op.equals("2"))
+			{
+				sendMessageProject();
+			}
+			
+		}
+		
+	}
+
+	private void sendMessageProject() {
+		ArrayList<DatabaseRow> table = servConn.getProjects(true);
+		int tableIndex = chooseProject(table); //TODO add past
+		int projectId;
+		String msg;
+		
+		
+		if(tableIndex>=0)
+		{
+			projectId = Integer.parseInt(table.get(tableIndex).getColumns().get(0));
+
+			System.out.println("Type your message: ");
+			msg = sc.nextLine();
+			
+			servConn.sendMessageProject(projectId, msg);
+		}
+		else if(tableIndex == -2)
+			System.out.println("Unexpected Problem!");
+		
+	}
+
 	private void viewPastProjects() {
 		ArrayList<DatabaseRow> table = servConn.getProjects(false); //false significa past projects
 		int index = chooseProject(table);
@@ -917,7 +977,7 @@ public class Client {
 			
 			for(int i=0;i<table.size();i++)
 			{
-				System.out.println((i+1)+": \t( "+table.get(i).getColumns().get(1)+"$ ) \t"+table.get(i).getColumns().get(2)+" ");
+				System.out.println((i+1)+": \t( "+table.get(i).getColumns().get(1)+" ) \t"+table.get(i).getColumns().get(2)+" ");
 			}
 			System.out.println("Please select a project from 1-"+table.size()+": ");
 			System.out.println();
@@ -940,12 +1000,12 @@ public class Client {
 				}
 			}
 			
-			return op-1; //para obter o id real do projecto
+			return op-1; //para obter posiçao na tabela
 			
 		}
 		else if(table.size()==0)
 		{
-			System.out.println("You don't have any projects.");
+			System.out.println("No projects at the moment.");
 			return -1;
 		}
 		else {

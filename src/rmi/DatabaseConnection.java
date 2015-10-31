@@ -929,6 +929,34 @@ public class DatabaseConnection {
 		}
 		return true;
 	}
+
+	public boolean sendMessageProject(int projectId, String activeUser, String msg) {
+		String sqlQuery = null;
+		//ResultSet result = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+
+			sqlQuery = "insert into message(id_project,email,text,message_date,message_id) "
+					+ "values ("+projectId+",'"+activeUser+"','"+msg+"', current_timestamp, nextval('message_id_seq'))";
+
+			statement.executeUpdate(sqlQuery);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.err.println("SQL Exception: "+e);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	
 	//Rascunho
 	/*
