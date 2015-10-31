@@ -58,4 +58,7 @@ public interface RMIInterface extends Remote {
 
 	public ArrayList<DatabaseRow> getMyRewards(String activeUser) throws RemoteException;
 
+
+	public boolean giveawayReward(int pledgeId, String emailReceiver) throws RemoteException;
+
 }

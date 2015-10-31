@@ -707,7 +707,7 @@ public class DatabaseConnection {
 		try {
 			statement = connection.createStatement();
 			
-			sqlQuery = "select r.reward_description, pr.project_name, pr.date_end > current_timestamp, r.value "
+			sqlQuery = "select r.reward_description, pr.project_name, pr.date_end > current_timestamp, r.value, p.pledge_id "
 					+ "from pledge p, reward r, project pr "
 					+ "where email_receiver = '"+activeUser+"' and p.reward_id = r.reward_id and pr.id_project = r.id_project;";
 			
@@ -720,8 +720,9 @@ public class DatabaseConnection {
 				rowInfo = new ArrayList<>();
 				rowInfo.add(resultSet.getString(1)); 	//reward_description
 				rowInfo.add(resultSet.getString(2));	//project_name
-				rowInfo.add(resultSet.getString(3));	//project active?
 				rowInfo.add(Integer.toString(resultSet.getInt(4)));		//value
+				rowInfo.add(resultSet.getString(3));	//project active?
+				rowInfo.add(resultSet.getString(5));	//pledge Id
 				row = new DatabaseRow(rowInfo);
 				table.add(row);
 			}
@@ -741,6 +742,35 @@ public class DatabaseConnection {
 		}
 		
 		return table;
+	}
+
+	public boolean giveawayReward(int pledgeId, String emailReceiver) {
+		String sqlQuery = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			System.err.println("SQL: "+e);
+		}
+		sqlQuery = "update pledge "
+				+ "set email_receiver = '"+emailReceiver+"' "
+				+ "where pledge_id = "+pledgeId;
+		
+		
+		
+		try {
+			if(statement.executeUpdate(sqlQuery)>0)
+				return true;
+			else
+				return false;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 	//Rascunho

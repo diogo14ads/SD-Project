@@ -100,6 +100,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 	public ArrayList<DatabaseRow> getMyRewards(String activeUser) throws RemoteException {
 		return dbCon.getMyRewards(activeUser);
 	}
+
+	public boolean giveawayReward(int pledgeId, String emailReceiver) throws RemoteException {
+		return dbCon.giveawayReward(pledgeId,emailReceiver);
+		
+	}
 	
 	public static void main(String[] args) throws RemoteException{
 		RMIInterface ri = new RMIServer();

@@ -394,6 +394,21 @@ public class ServerConnection {
 		return response.getTable();
 	}
 
+	public void giveawayReward(int pledgeId, String emailReceiver) {
+		TCPMessage message = new TCPMessage(TCPMessageType.GIVEAWAY_REWARD_REQUEST);
+		
+		message.getIntegers().add(pledgeId);
+		message.getStrings().add(emailReceiver);
+		
+		try {
+			oos.writeObject(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 	
 
 }

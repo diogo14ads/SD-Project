@@ -66,6 +66,7 @@ public class Client {
         System.out.println("1. Check Balance");
         System.out.println("2. Check Rewards");
         System.out.println("3. Manage Projects");
+        System.out.println("4. Giveaway Reward");
         System.out.println("0. <- Back");
         System.out.println("----------------------------");
         System.out.println("");
@@ -607,6 +608,10 @@ public class Client {
 			{
 				manageProjectsMenu();
 			}
+			else if(op.equals("4"))
+			{
+				giveawayReward();
+			}
 			else if(op.equals("0"))
 			{
 				break;
@@ -619,6 +624,69 @@ public class Client {
 	}
 	
 	
+	private void giveawayReward() {
+		
+		String emailReceiver = null;
+		int pledgeId = choosePledge(servConn.checkMyRewards());
+		
+		System.out.println("Insert the e-mail of the person you want to give the reward to: ");
+		emailReceiver = sc.nextLine();
+		
+		if(pledgeId > 0)
+			servConn.giveawayReward(pledgeId, emailReceiver);
+		
+	}
+
+	private int choosePledge(ArrayList<DatabaseRow> table) {
+		
+		int op = -1;
+		
+		if(table != null & table.size()>0)
+		{
+			System.out.println("Rewards: ");
+			
+			for(int i=0;i<table.size();i++)
+			{
+				System.out.println((i+1)+": ( "+table.get(i).getColumns().get(2)+"$ ) "+table.get(i).getColumns().get(0));
+			}
+			System.out.println("0: <- Back");
+			System.out.println("Please select a reward from 1-"+table.size()+": ");
+			System.out.println();
+			System.out.println();
+			
+			while(true)
+			{
+				try {
+					op = sc.nextInt();
+
+					sc.nextLine(); //flush
+					if(op<0 || op>table.size())
+						System.out.println("Invalid option!\nPlease enter the your option again: ");
+					else
+						break;
+				} catch (InputMismatchException e) {
+					System.out.println("Invalid option!\nPlease enter the your option again: ");
+					System.out.println();
+					System.out.println();
+					
+				}
+			}
+			
+			if(op!=0)
+				return Integer.parseInt(table.get(op-1).getColumns().get(4)); //para obter o id real da pledge
+			else
+				return 0;
+			
+		}
+		else if(table.size()==0)
+		{
+			System.out.println("You don't have rewards to giveaway."); //isto nunca deve acontecer
+			return 0;
+		}
+		else
+			return -1;
+	}
+
 	private void checkRewards() {
 		printMyRewards(servConn.checkMyRewards());
 		
@@ -629,11 +697,11 @@ public class Client {
 		
 		for(int i=0;i<table.size();i++)
 		{
-			if(table.get(i).getColumns().get(2).equals("t"))
+			if(table.get(i).getColumns().get(3).equals("t"))
 				status = "Pending";
 			else
 				status = "Successfull";
-			System.out.println((i+1)+": ( "+table.get(i).getColumns().get(3)+"$ ) "+table.get(i).getColumns().get(0)+" | Status: "+status);
+			System.out.println((i+1)+": ( "+table.get(i).getColumns().get(2)+"$ ) "+table.get(i).getColumns().get(0)+" | Status: "+status);
 		}
 		
 		System.out.println("\n<Enter> to continue");

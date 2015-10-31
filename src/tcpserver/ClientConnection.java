@@ -139,7 +139,26 @@ public class ClientConnection implements Runnable {
 				{
 					getMyRewards(message);
 				}
+				else if(message.getType() == TCPMessageType.GIVEAWAY_REWARD_REQUEST)
+				{
+					giveawayReward(message);
+				}
 			}
+		}
+		
+	}
+
+	private void giveawayReward(TCPMessage message) {
+		
+		int pledgeId = message.getIntegers().get(0);
+		String emailReceiver = message.getStrings().get(0);
+		boolean success = false;
+		
+		try {
+			success=ri.giveawayReward(pledgeId,emailReceiver);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
