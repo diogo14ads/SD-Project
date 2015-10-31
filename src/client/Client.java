@@ -1,6 +1,5 @@
 package client;
 
-import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,7 +9,6 @@ import java.util.Locale;
 import java.util.Scanner;
 
 import common.DatabaseRow;
-import javafx.scene.chart.PieChart.Data;
 
 public class Client {
 	ServerConnection servConn;
@@ -50,7 +48,7 @@ public class Client {
         System.out.println("2. View Past Projects");
         System.out.println("3. My Account");
         System.out.println("4. Create Project");
-        System.out.println("5. My Message");
+        System.out.println("5. My Messages");
         System.out.println("0. Logout");
         System.out.println("----------------------------");
         System.out.println("");
@@ -124,9 +122,7 @@ public class Client {
 	{
 
 		String op = null;
-		
-		
-		
+
 		while(true)
 		{
 
@@ -427,7 +423,7 @@ public class Client {
 		        }
 		        else if(op.equals("2"))
 		        {
-		        	
+		        	cancelProject(projectId);
 		        }
 		        else if(op.equals("3"))
 		        {
@@ -451,6 +447,12 @@ public class Client {
 		
 	}
 	
+	private void cancelProject(int projectId) {
+
+		servConn.cancelProject(projectId);
+		
+	}
+
 	private void addAdministrator(int projectId) {
 		String email;
 		int value;

@@ -772,6 +772,98 @@ public class DatabaseConnection {
 		
 		return false;
 	}
+
+	public boolean cancelProject(int projectId) {
+		String deleteProject = null;
+		String deleteLevels = null;
+		String deleteRewards = null;
+		String deletePledges = null;
+		String deleteMessages = null;
+		String moneyBack = null;
+		String deleteManages = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			
+			deleteProject = "delete from project "
+					+ "where id_project =" +projectId;
+			deleteManages = "delete from manages "
+					+ "where id_project =" +projectId;
+			deleteLevels = "delete from level "
+					+ "where id_project ="+projectId;
+			deleteRewards = "delete from reward "
+					+ "where id_project ="+projectId;
+			deleteMessages = "delete from message "
+					+ "where id_project ="+projectId;
+			deletePledges = "delete from pledge "
+					+ "where reward_id in (select reward_id "
+										+ "from reward "
+										+ "where id_project = "+projectId+")";
+			moneyBack = "update user_account "
+					+ "set balance = (balance + aux.value) "
+					+ "from (select sum(r.value) as value, p.email_buyer "
+							+ "from pledge p, reward r "
+							+ "where p.reward_id in (select reward_id "
+												+ "from reward "
+												+ "where id_project = "+projectId+") "
+												+ "and p.reward_id = r.reward_id "
+												+ "group by p.email_buyer) aux "
+					+ "where email = aux.email_buyer";
+			
+			connection.setAutoCommit(false);
+			
+			statement.executeUpdate(moneyBack);
+			statement.executeUpdate(deletePledges);
+			statement.executeUpdate(deleteRewards);
+			statement.executeUpdate(deleteMessages);
+			statement.executeUpdate(deleteLevels);
+			statement.executeUpdate(deleteManages);
+			statement.executeUpdate(deleteProject);
+			
+			connection.commit();
+			
+			/*
+			 * "delete from reward "
+			+ "where level_id = "+levelId;
+			 */
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.err.println("SQL Exception: "+e);
+			if(connection != null)
+			{
+				System.err.println("Rolling back transaction");
+				try {
+					connection.rollback();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			e.printStackTrace();
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return false;
+		}
+		try {
+			connection.setAutoCommit(true);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
 	
 	//Rascunho
 	/*

@@ -143,7 +143,24 @@ public class ClientConnection implements Runnable {
 				{
 					giveawayReward(message);
 				}
+				else if(message.getType() == TCPMessageType.CANCEL_PROJECT_REQUEST)
+				{
+					cancelProject(message);
+				}
 			}
+		}
+		
+	}
+
+	private void cancelProject(TCPMessage message) {
+		int projectId = message.getIntegers().get(0);
+		boolean success = false;
+		
+		try {
+			success = ri.cancelProject(projectId);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}

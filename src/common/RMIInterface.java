@@ -61,4 +61,7 @@ public interface RMIInterface extends Remote {
 
 	public boolean giveawayReward(int pledgeId, String emailReceiver) throws RemoteException;
 
+
+	public boolean cancelProject(int projectId) throws RemoteException;
+
 }

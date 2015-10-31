@@ -105,6 +105,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 		return dbCon.giveawayReward(pledgeId,emailReceiver);
 		
 	}
+
+	public boolean cancelProject(int projectId) throws RemoteException {
+		return dbCon.cancelProject(projectId);
+	}
 	
 	public static void main(String[] args) throws RemoteException{
 		RMIInterface ri = new RMIServer();
@@ -112,5 +116,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 		LocateRegistry.createRegistry(4001).rebind("rmi", ri);
 		System.out.println("RMI Server ready...");
 	}
+
 
 }

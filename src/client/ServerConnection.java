@@ -409,6 +409,20 @@ public class ServerConnection {
 		
 	}
 
+	public void cancelProject(int projectId) {
+		TCPMessage message = new TCPMessage(TCPMessageType.CANCEL_PROJECT_REQUEST);
+		
+		message.getIntegers().add(projectId);
+		
+		try {
+			oos.writeObject(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 	
 
 }
