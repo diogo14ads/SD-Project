@@ -21,6 +21,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 	private DatabaseConnection dbCon = null;
 	
 	static Properties prop = new Properties();
+	
 
 	protected RMIServer() throws RemoteException{
 		this.dbCon = new DatabaseConnection();
@@ -37,12 +38,16 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 	}
 	
 	public static void main(String[] args) throws RemoteException{
+		readProperties();
 		RMIInterface ri = new RMIServer();
-		String rmiRegistry = prop.getProperty("rmiRegistry");
-		System.out.println("TESTE\n"+rmiRegistry+"\nTESTE");
-		String rmiLookup = prop.getProperty("rmiLookup");
-		LocateRegistry.createRegistry(Integer.parseInt(rmiRegistry)).rebind(rmiLookup, ri);
+		try {
+			LocateRegistry.createRegistry(Integer.parseInt(prop.getProperty("RmiRegistry"))).rebind(prop.getProperty("RmiLookup"), ri);
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println("RMI Server ready...");
+		
 	}
 	
 	public static void readProperties(){

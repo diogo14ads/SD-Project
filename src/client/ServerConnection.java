@@ -25,7 +25,7 @@ public class ServerConnection{
 		try {
 			readProperties();
 
-			socket = new Socket(prop.getProperty("host"), Integer.parseInt(prop.getProperty("tcpPort")));
+			socket = new Socket(prop.getProperty("host"), Integer.parseInt(prop.getProperty("TcpPort")));
 			
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
