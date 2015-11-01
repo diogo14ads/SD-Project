@@ -58,19 +58,11 @@ public class ServerConnection{
 		TCPMessage message = new TCPMessage(TCPMessageType.REGISTER_REQUEST,registerData);
 		TCPMessage response = null;
 		
-		try {
-			oos.writeObject(message);
-			
-			response = (TCPMessage) ois.readObject();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
-		if(response.getStrings().get(0).equals("1"))
+		response = receiveTCPMessage();
+		
+		if(response != null && response.getStrings().get(0).equals("1"))
 			return true;
 		else
 			return false;
@@ -81,20 +73,11 @@ public class ServerConnection{
 		TCPMessage message = new TCPMessage(TCPMessageType.LOGIN_REQUEST, loginData);
 		TCPMessage response = null;
 		
-		try {
-			oos.writeObject(message);
-			
-			response = (TCPMessage) ois.readObject();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
-		if(response.getStrings().get(0).equals("1"))
+		response = receiveTCPMessage();
+		
+		if(response != null && response.getStrings().get(0).equals("1"))
 			return true;
 		else
 			return false;
@@ -128,12 +111,7 @@ public class ServerConnection{
 		TCPMessage message = new TCPMessage(TCPMessageType.CREATE_PROJECT_REQUEST, projectData);
 		//Nao precisa de response, se for preciso reenviar faz em background (é preciso implementar)
 		
-		try {
-			oos.writeObject(message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
 	}
 	
@@ -141,24 +119,14 @@ public class ServerConnection{
 		TCPMessage message = new TCPMessage(TCPMessageType.CHECK_BALANCE_REQUEST);
 		TCPMessage response = null;
 		
-		try {
-			oos.writeObject(message);
-			
-			response = (TCPMessage) ois.readObject(); //saldo vem no index 0 do arraylist de integers
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return response.getIntegers().get(0);
-	}
-	
-	public void sendMessage()
-	{
-		//TODO implementar funçao genérica de envio de mensagens (se houver tempo)
+		sendTCPMessage(message);
+		
+		response = receiveTCPMessage();  //saldo vem no index 0 do arraylist de integers
+		
+		if(response != null)
+			return response.getIntegers().get(0);
+		else
+			return -1;
 	}
 
 	public ArrayList<DatabaseRow> getMyProjectList() {
@@ -166,20 +134,20 @@ public class ServerConnection{
 		TCPMessage response = null;
 		ArrayList<DatabaseRow> myProjects = null;
 		
-		try {
-			oos.writeObject(message);
-			
-			response=(TCPMessage) ois.readObject();
-			myProjects = response.getTable();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
-		return myProjects;
+		response = receiveTCPMessage();
+		
+		if(response != null)
+		{
+			myProjects = response.getTable();
+		
+			return myProjects;
+		}
+		else
+		{
+			return null;
+		}
 		
 		
 	}
@@ -190,20 +158,14 @@ public class ServerConnection{
 		
 		message.getIntegers().add(projectId);
 		
-		try {
-			oos.writeObject(message);
-			
-			response = (TCPMessage) ois.readObject();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
+		response = receiveTCPMessage();
 		
-		return response.getTable();
+		if(response != null)
+			return response.getTable();
+		else
+			return null;
 	}
 
 	public void changeGoal(int projectId, int levelId, int goal) {
@@ -215,14 +177,7 @@ public class ServerConnection{
 
 		message.getIntegers().add(goal);
 		
-		try {
-			oos.writeObject(message);
-			
-			//TODO persistencia
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 	}
 
 	public void addLevel(int projectId, int goal) {
@@ -232,14 +187,8 @@ public class ServerConnection{
 
 		message.getIntegers().add(goal);
 		
-		try {
-			oos.writeObject(message);
-			
-			//TODO persistencia
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		sendTCPMessage(message);
 		
 	}
 
@@ -254,14 +203,7 @@ public class ServerConnection{
 
 		message.getIntegers().add(value);
 		
-		try {
-			oos.writeObject(message);
-			
-			//TODO persistencia
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 	}
 
 	public ArrayList<DatabaseRow> getLevelRewards(int projectId, int levelId) {
@@ -272,20 +214,14 @@ public class ServerConnection{
 
 		message.getIntegers().add(levelId);
 		
-		try {
-			oos.writeObject(message);
-			
-			response = (TCPMessage) ois.readObject();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
+		response = receiveTCPMessage();
 		
-		return response.getTable();
+		if(response != null)
+			return response.getTable();
+		else
+			return null;
 	}
 
 	public void removeReward(int rewardId) {
@@ -293,13 +229,7 @@ public class ServerConnection{
 		
 		message.getIntegers().add(rewardId);
 		
-		try {
-			oos.writeObject(message);
-		
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 
 	}
 
@@ -308,13 +238,7 @@ public class ServerConnection{
 		
 		message.getIntegers().add(levelId);
 		
-		try {
-			oos.writeObject(message);
-		
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
 	}
 
@@ -325,14 +249,7 @@ public class ServerConnection{
 
 		message.getStrings().add(email);
 		
-		try {
-			oos.writeObject(message);
-			
-			//TODO persistencia
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
 	}
 
@@ -349,20 +266,17 @@ public class ServerConnection{
 		
 		message = new TCPMessage(type);
 		
-		try {
-			oos.writeObject(message);
-			
-			response=(TCPMessage) ois.readObject();
-			projects = response.getTable();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
-		return projects;
+		response = receiveTCPMessage();
+		
+		if(response != null)
+		{
+			projects = response.getTable();
+			return projects;
+		}
+		else
+			return null;
 	}
 
 	public ArrayList<DatabaseRow> getActiveRewards(int projectId) {
@@ -371,20 +285,14 @@ public class ServerConnection{
 		
 		message.getIntegers().add(projectId);
 		
-		try {
-			oos.writeObject(message);
-			
-			response = (TCPMessage) ois.readObject();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
+		response = receiveTCPMessage();
 		
-		return response.getTable();
+		if(response != null)
+			return response.getTable();
+		else
+			return  null;
 	}
 
 	public void buyReward(int rewardId) {
@@ -392,14 +300,7 @@ public class ServerConnection{
 		
 		message.getIntegers().add(rewardId);
 		
-		try {
-			oos.writeObject(message);
-			
-			//TODO persistencia
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 	}
 
 	public ArrayList<DatabaseRow> checkMyRewards() {
@@ -407,19 +308,14 @@ public class ServerConnection{
 		TCPMessage response = null;
 		ArrayList<DatabaseRow> table = null;
 		
-		try {
-			oos.writeObject(message);
-			
-			response = (TCPMessage) ois.readObject();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
-		return response.getTable();
+		response = receiveTCPMessage();
+		
+		if(response != null)
+			return response.getTable();
+		else
+			return null;
 	}
 
 	public void giveawayReward(int pledgeId, String emailReceiver) {
@@ -428,12 +324,7 @@ public class ServerConnection{
 		message.getIntegers().add(pledgeId);
 		message.getStrings().add(emailReceiver);
 		
-		try {
-			oos.writeObject(message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
 	}
 
@@ -442,12 +333,7 @@ public class ServerConnection{
 		
 		message.getIntegers().add(projectId);
 		
-		try {
-			oos.writeObject(message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
 	}
 
@@ -457,14 +343,7 @@ public class ServerConnection{
 		message.getIntegers().add(projectId);
 		message.getStrings().add(msg);
 		
-		try {
-			oos.writeObject(message);
-			
-			//TODO persistencia
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
 	}
 
@@ -472,21 +351,14 @@ public class ServerConnection{
 		TCPMessage message = new TCPMessage(TCPMessageType.MY_MESSAGES_REQUEST);
 		TCPMessage response = null;
 		
-		try {
-			oos.writeObject(message);
-
-			response = (TCPMessage) ois.readObject();
-			
-			//TODO persistencia
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendTCPMessage(message);
 		
-		return response.getTable();
+		response = receiveTCPMessage();
+		
+		if(response != null)
+			return response.getTable();
+		else 
+			return null;
 	}
 
 	public void sendMessageUser(int projectId, String email, String msg) {
@@ -496,13 +368,33 @@ public class ServerConnection{
 		message.getStrings().add(email);
 		message.getStrings().add(msg);
 		
+		sendTCPMessage(message);
+	}
+	
+	public boolean sendTCPMessage(TCPMessage message)
+	{
 		try {
 			oos.writeObject(message);
-			
-			//TODO persistencia
+			return true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public TCPMessage receiveTCPMessage()
+	{
+		try {
+			return ((TCPMessage) ois.readObject());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
 		}
 	}
 
