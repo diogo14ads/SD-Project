@@ -455,7 +455,7 @@ public class Client {
 			}
 			
 		}
-		else
+		else if(projectId < 0) // projectId == 0 já é tratado em chooseMyProject
 		{
 			//TODO
 			System.out.println("There was an unexpected problem!");

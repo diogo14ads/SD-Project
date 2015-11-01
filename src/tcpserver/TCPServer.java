@@ -11,10 +11,14 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.ArrayList;
 import java.util.Properties;
 
+import common.DatabaseRow;
 import common.RMIInterface;
 
 public class TCPServer {
@@ -23,6 +27,8 @@ public class TCPServer {
 	static boolean startAsPrimary = false;
 	static DatagramSocket aSocket = null;
 	static Socket testSocket;
+	private RMIInterface ri;
+	static int connectionRetrys;
 
 	public static void main(String[] args) {
 		readProperties();
@@ -31,8 +37,9 @@ public class TCPServer {
 
 	public TCPServer() {
 		try {
-
-			RMIInterface ri = (RMIInterface) LocateRegistry.getRegistry(4001).lookup("rmi");
+			
+			connectionRetrys = Integer.parseInt(prop.getProperty("connectionRetrys"));
+			ri = (RMIInterface) LocateRegistry.getRegistry(4001).lookup("rmi");
 			
 			System.out.println("Listening in port: " + prop.getProperty("TcpPort") + "...");
 
@@ -66,7 +73,7 @@ public class TCPServer {
 					Socket clientSocket = listenSocket.accept();
 					System.out.println("CLIENT_SOCKET (created at accept())=" + clientSocket);
 
-					new ClientConnection(clientSocket, ri);
+					new ClientConnection(clientSocket, this);
 
 				}
 			}
@@ -96,6 +103,689 @@ public class TCPServer {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+
+	public synchronized void sendMessageUser(final int projectId, final String email, final String msg) throws RemoteException
+	{
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				ri.sendMessageUser(projectId, email, msg);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void sendMessageProject(int projectId, String email, String msg) throws RemoteException
+	{
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				ri.sendMessageProject(projectId, email, msg);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void cancelProject(int projectId) throws RemoteException
+	{
+		
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				ri.cancelProject(projectId);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void giveawayReward(int pledgeId, String emailReceiver) throws RemoteException
+	{
+		
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				ri.giveawayReward(pledgeId, emailReceiver);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void buyReward(int rewardId, String email) throws RemoteException
+	{
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				ri.buyReward(rewardId, email);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void addAdministrator(int projectId, String email) throws RemoteException
+	{
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				ri.addAdministrator(projectId, email);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void removeLevel(int levelId) throws RemoteException
+	{
+		
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+
+				ri.removeLevel(levelId);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void removeReward(int rewardId) throws RemoteException
+	{
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+
+				ri.removeReward(rewardId);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void addReward(int projectId, int levelId, String description, int value) throws RemoteException
+	{
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+
+				ri.addReward(projectId, levelId, description, value);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void addLevel(int projectId, int goal) throws RemoteException
+	{
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+
+				ri.addLevel(projectId, goal);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void changeLevelGoal(int projectId, int levelId, int goal) throws RemoteException
+	{
+		ri.changeLevelGoal(projectId, levelId, goal);
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				ri.changeLevelGoal(projectId, levelId, goal);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+	}
+	public synchronized void createProject(String name, String description, String date, String goal, String userEmail) throws RemoteException
+	{
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				ri.createProject(name, description, date, goal, userEmail);
+				return;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return;
+				}
+			}
+		}
+		
+	}
+	public synchronized boolean register(String name, String email, String password) throws RemoteException
+	{
+		boolean success = false;
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				success = ri.register(name, email, password);
+				return success;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	public ArrayList<DatabaseRow> getMyMessages(String activeUser) throws RemoteException {
+		
+		boolean isConnected = false;
+		while(true) 
+		{
+			try {
+				return ri.getMyMessages(activeUser);
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return null;
+				}
+			}
+		}
+	}
+
+	public ArrayList<DatabaseRow> getMyRewards(String activeUser) throws RemoteException {
+		
+		boolean isConnected = false;
+		while(true) 
+		{
+			try {
+				return ri.getMyRewards(activeUser);
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return null;
+				}
+			}
+		}
+		
+	}
+
+	public int checkRewardPrice(int rewardId) throws RemoteException {
+		
+		boolean isConnected = false;
+		while(true) 
+		{
+			try {
+				return ri.checkRewardPrice(rewardId);
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return -1;
+				}
+			}
+		}
+	}
+
+	public int checkBalance(String activeUser) throws RemoteException { 
+
+		boolean isConnected = false;
+		while(true) 
+		{
+			try {
+				return ri.checkBalance(activeUser);
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return -1;
+				}
+			}
+		}
+	}
+
+	public ArrayList<DatabaseRow> activeRewardsList(int projectId) throws RemoteException {
+		
+		
+		boolean isConnected = false;
+		while(true) 
+		{
+			try {
+				return ri.activeRewardsList(projectId);
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return null;
+				}
+			}
+		}
+		
+		
+	}
+
+	public ArrayList<DatabaseRow> pastProjectsList() throws RemoteException {
+		
+		boolean isConnected = false;
+		while(true) 
+		{
+			try {
+				return ri.pastProjectsList();
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return null;
+				}
+			}
+		}
+	}
+
+	public ArrayList<DatabaseRow> currentProjectsList() {
+		boolean isConnected = false;
+		while(true) 
+		{
+			try {
+				return ri.currentProjectsList();
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return null;
+				}
+			}
+		}
+		
+	}
+
+	public ArrayList<DatabaseRow> levelRewardsList(int projectId, int levelId) throws RemoteException {
+		
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				return ri.levelRewardsList(projectId, levelId);
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return null;
+				}
+			}
+		}
+		
+	}
+
+	public ArrayList<DatabaseRow> projectLevelsList(Integer projectId) throws RemoteException {
+		
+		
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				return ri.projectLevelsList(projectId);
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return null;
+				}
+			}
+		}
+	}
+
+	public ArrayList<DatabaseRow> myProjectsList(String activeUser) {
+
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				return ri.myProjectsList(activeUser);
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return null;
+				}
+			}
+		}
+	}
+
+	public boolean login(String email, String password) {
+		boolean success = false;
+		boolean isConnected = false;
+		while(true)
+		{
+			try {
+				success = ri.login(email, password);
+				return success;
+			} catch (RemoteException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnectRMI())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return false;
+				}
+			}
+		}
+	}
+	
+	private boolean reconnectRMI(){
+		System.out.println("Reconnecting to RMI...");
+		try {
+			ri = (RMIInterface) LocateRegistry.getRegistry(4001).lookup("rmi");
+			return true;
+		} catch (AccessException e) {
+			System.err.println("AccessException: "+e);
+			return false;
+		} catch (RemoteException e) {
+			System.err.println("RemoteException: "+e);
+			return false;
+		} catch (NotBoundException e) {
+			System.err.println("NotBoundException "+e);
+			return false;
 		}
 	}
 

@@ -716,7 +716,7 @@ public class DatabaseConnection {
 			
 			for(int i=0;i<table.size();i++)
 			{
-				System.out.println(table.get(i).getColumns().toString());
+				System.out.println("FODASSE: "+table.get(i).getColumns().toString());
 				
 			}
 			

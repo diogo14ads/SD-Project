@@ -15,15 +15,15 @@ import common.TCPMessageType;
 public class ClientConnection extends Thread {
 	
 	private Socket socket;
-	private RMIInterface ri;
+	private TCPServer mainServer;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 	private String activeUser;
 
-	public ClientConnection(Socket socket, RMIInterface ri) {
+	public ClientConnection(Socket socket, TCPServer mainServer) {
 		super();
 		this.socket = socket;
-		this.ri = ri;
+		this.mainServer = mainServer;
 		try {
 			//Para receber requests
 			this.oos = new ObjectOutputStream(socket.getOutputStream());
@@ -174,14 +174,13 @@ public class ClientConnection extends Thread {
 	}
 
 	private void sendMessageUser(TCPMessage message) {
-		boolean success;
 		
 		int projectId = message.getIntegers().get(0);
 		String email = message.getStrings().get(0);
 		String msg = message.getStrings().get(1);
 		
 		try {
-			success = ri.sendMessageUser(projectId,email, msg);
+			mainServer.sendMessageUser(projectId,email, msg);
 
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -191,10 +190,9 @@ public class ClientConnection extends Thread {
 
 	private void getMyMessages(TCPMessage message) {
 		TCPMessage response = new TCPMessage(TCPMessageType.MY_MESSAGES_REQUEST);
-		ArrayList<DatabaseRow> table = null;
 		
 		try {
-			response.setTable(ri.getMyMessages(activeUser));
+			response.setTable(mainServer.getMyMessages(activeUser));
 			
 			oos.writeObject(response);
 		} catch (RemoteException e) {
@@ -208,13 +206,12 @@ public class ClientConnection extends Thread {
 	}
 
 	private void sendMessageProject(TCPMessage message) {
-		boolean success;
 		
 		int projectId = message.getIntegers().get(0);
 		String msg = message.getStrings().get(0);
 		
 		try {
-			success = ri.sendMessageProject(projectId,activeUser, msg);
+			mainServer.sendMessageProject(projectId,activeUser, msg);
 
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -225,10 +222,9 @@ public class ClientConnection extends Thread {
 
 	private void cancelProject(TCPMessage message) {
 		int projectId = message.getIntegers().get(0);
-		boolean success = false;
 		
 		try {
-			success = ri.cancelProject(projectId);
+			mainServer.cancelProject(projectId);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -240,10 +236,9 @@ public class ClientConnection extends Thread {
 		
 		int pledgeId = message.getIntegers().get(0);
 		String emailReceiver = message.getStrings().get(0);
-		boolean success = false;
 		
 		try {
-			success=ri.giveawayReward(pledgeId,emailReceiver);
+			mainServer.giveawayReward(pledgeId,emailReceiver);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -253,10 +248,9 @@ public class ClientConnection extends Thread {
 
 	private void getMyRewards(TCPMessage message) {
 		TCPMessage response = new TCPMessage(TCPMessageType.MY_REWARDS_REQUEST);
-		ArrayList<DatabaseRow> table = null;
 		
 		try {
-			response.setTable(ri.getMyRewards(activeUser));
+			response.setTable(mainServer.getMyRewards(activeUser));
 			
 			oos.writeObject(response);
 		} catch (RemoteException e) {
@@ -270,14 +264,13 @@ public class ClientConnection extends Thread {
 	}
 
 	private boolean buyReward(TCPMessage message) {
-		boolean success;
-		
+
 		int rewardId = message.getIntegers().get(0);
 		
 		try {
-			if(ri.checkBalance(activeUser)>ri.checkRewardPrice(rewardId))
+			if(mainServer.checkBalance(activeUser)>mainServer.checkRewardPrice(rewardId))
 			{
-				success = ri.buyReward(rewardId,activeUser);
+				mainServer.buyReward(rewardId,activeUser);
 				return true;
 			}
 			else
@@ -292,11 +285,10 @@ public class ClientConnection extends Thread {
 
 	private void getActiveRewards(TCPMessage message) {
 		TCPMessage response = new TCPMessage(TCPMessageType.ACTIVE_REWARDS_REQUEST);
-		ArrayList<DatabaseRow> table = null;
 		int projectId = message.getIntegers().get(0);
 		
 		try {
-			response.setTable(ri.activeRewardsList(projectId));
+			response.setTable(mainServer.activeRewardsList(projectId));
 			
 			oos.writeObject(response);
 		} catch (RemoteException e) {
@@ -315,7 +307,7 @@ public class ClientConnection extends Thread {
 		ArrayList<DatabaseRow> table = null;
 		
 		try {
-			response.setTable(ri.pastProjectsList());
+			response.setTable(mainServer.pastProjectsList());
 			oos.writeObject(response);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -333,7 +325,7 @@ public class ClientConnection extends Thread {
 		ArrayList<DatabaseRow> table = null;
 		
 		try {
-			response.setTable(ri.currentProjectsList());
+			response.setTable(mainServer.currentProjectsList());
 			oos.writeObject(response);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -348,14 +340,12 @@ public class ClientConnection extends Thread {
 	private void addAdministrator(TCPMessage message) {
 		int projectId = message.getIntegers().get(0);
 		String email = message.getStrings().get(0);
-		//falta a resposta para garantir persistência
-		boolean success = false;
 		
 		if(!message.getIntegers().isEmpty() && !message.getStrings().isEmpty() 
 				&& message.getIntegers().size()==1 && message.getStrings().size()==1)
 		{
 			try {
-				success=ri.addAdministrator(projectId,email);
+				mainServer.addAdministrator(projectId,email);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -366,10 +356,9 @@ public class ClientConnection extends Thread {
 
 	private void removeLevel(TCPMessage message) {
 		int levelId = message.getIntegers().get(0);
-		boolean success = false;
 		
 		try {
-			success = ri.removeLevel(levelId);
+			mainServer.removeLevel(levelId);
 			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -380,10 +369,9 @@ public class ClientConnection extends Thread {
 
 	private void removeReward(TCPMessage message) {
 		int rewardId = message.getIntegers().get(0);
-		boolean success = false;
 		
 		try {
-			success = ri.removeReward(rewardId);
+			mainServer.removeReward(rewardId);
 			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -394,12 +382,11 @@ public class ClientConnection extends Thread {
 
 	private void levelRewardsList(TCPMessage message) {
 		TCPMessage response = new TCPMessage(TCPMessageType.LEVEL_REWARDS_REQUEST);
-		ArrayList<DatabaseRow> table = null;
 		int projectId = message.getIntegers().get(0);
 		int levelId = message.getIntegers().get(1);
 		
 		try {
-			response.setTable(ri.levelRewardsList(projectId,levelId));
+			response.setTable(mainServer.levelRewardsList(projectId,levelId));
 			
 			oos.writeObject(response);
 		} catch (RemoteException e) {
@@ -417,13 +404,12 @@ public class ClientConnection extends Thread {
 		String description = message.getStrings().get(0);
 		int value = message.getIntegers().get(2);
 		//falta a resposta para garantir persistência
-		boolean success = false;
 		
 		if(!message.getIntegers().isEmpty() && !message.getStrings().isEmpty() 
 				&& message.getIntegers().size()==3 && message.getStrings().size()==1)
 		{
 			try {
-				success=ri.addReward(projectId,levelId,description,value);
+				mainServer.addReward(projectId,levelId,description,value);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -437,14 +423,13 @@ public class ClientConnection extends Thread {
 		int projectId = message.getIntegers().get(0);
 		int goal = message.getIntegers().get(1);
 		//falta a resposta para garantir persistência
-		boolean success = false;
 		
 		
 		
 		if(!message.getIntegers().isEmpty() && message.getIntegers().size()==2)
 		{
 			try {
-				success=ri.addLevel(projectId,goal);
+				mainServer.addLevel(projectId,goal);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -460,7 +445,7 @@ public class ClientConnection extends Thread {
 		int goal = message.getIntegers().get(2);
 		
 		try {
-			ri.changeLevelGoal(projectId,levelId,goal);
+			mainServer.changeLevelGoal(projectId,levelId,goal);
 			//TODO persistencia
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -474,7 +459,7 @@ public class ClientConnection extends Thread {
 		ArrayList<DatabaseRow> table = null;
 		
 		try {
-			response.setTable(ri.projectLevelsList(message.getIntegers().get(0)));
+			response.setTable(mainServer.projectLevelsList(message.getIntegers().get(0)));
 			
 			oos.writeObject(response);
 		} catch (RemoteException e) {
@@ -490,10 +475,9 @@ public class ClientConnection extends Thread {
 	private void myProjectsList(TCPMessage message) {
 		
 		TCPMessage response = new TCPMessage(TCPMessageType.CHECK_BALANCE_REQUEST);
-		ArrayList<DatabaseRow> table = null;
 		
 		try {
-			response.setTable(ri.myProjectsList(activeUser));
+			response.setTable(mainServer.myProjectsList(activeUser));
 			oos.writeObject(response);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -509,7 +493,7 @@ public class ClientConnection extends Thread {
 		int balance = -1;
 		
 		try {
-			balance = ri.checkBalance(activeUser);
+			balance = mainServer.checkBalance(activeUser);
 			
 			response.getIntegers().add(balance);
 			
@@ -527,12 +511,11 @@ public class ClientConnection extends Thread {
 	private void createProject(TCPMessage message) {
 		ArrayList<String> projectData = message.getStrings(); //0: name | 1:description | 2: limit date 
 		//falta a resposta para garantir persistência
-		boolean success = false;
 		
 		if(!projectData.isEmpty() && projectData.size()==4)
 		{
 			try {
-				success=ri.createProject(projectData.get(0),projectData.get(1),projectData.get(2),projectData.get(3),activeUser);
+				mainServer.createProject(projectData.get(0),projectData.get(1),projectData.get(2),projectData.get(3),activeUser);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -549,11 +532,7 @@ public class ClientConnection extends Thread {
 		
 		if(!loginData.isEmpty() && loginData.size()==2)
 		{
-			try {
-				valid=ri.login(loginData.get(0), loginData.get(1));
-			} catch (RemoteException e) {
-				System.err.println("Remore: "+e);
-			}
+				valid=mainServer.login(loginData.get(0), loginData.get(1));
 		}
 		
 		//TODO criar função à parte? por num objecto tipo Mensagem?
@@ -579,7 +558,7 @@ public class ClientConnection extends Thread {
 				&& registerData.get(1).length()>0 && registerData.get(2).length()>0)
 		{
 			try {
-				success = ri.register(registerData.get(0), registerData.get(1), registerData.get(2));
+				success = mainServer.register(registerData.get(0), registerData.get(1), registerData.get(2));
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

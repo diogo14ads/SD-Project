@@ -94,7 +94,7 @@ public class ServerConnection{
 		return socket;
 	}
 	
-	public boolean registerAccount(ArrayList<String> registerData)	//Dá para fazer uma função geral
+	public boolean registerAccount(ArrayList<String> registerData)
 	{
 		TCPMessage message = new TCPMessage(TCPMessageType.REGISTER_REQUEST,registerData);
 		TCPMessage response = null;
@@ -122,7 +122,7 @@ public class ServerConnection{
 			return false;
 	}
 	
-	public boolean login(ArrayList<String> loginData)				//Dá para fazer uma função geral
+	public boolean login(ArrayList<String> loginData)		
 	{
 		TCPMessage message = new TCPMessage(TCPMessageType.LOGIN_REQUEST, loginData);
 		TCPMessage response = null;
@@ -176,7 +176,6 @@ public class ServerConnection{
 	public void createProject(ArrayList<String> projectData) {
 		
 		TCPMessage message = new TCPMessage(TCPMessageType.CREATE_PROJECT_REQUEST, projectData);
-		//Nao precisa de response, se for preciso reenviar faz em background (é preciso implementar)
 		
 		sendTCPMessage(message);
 		
@@ -433,7 +432,7 @@ public class ServerConnection{
 				break;
 			} catch (IOException e){}
 		}
-		
+
 		if(response != null)
 			return response.getTable();
 		else
