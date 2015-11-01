@@ -29,17 +29,22 @@ public class TCPServer {
 	static Socket testSocket;
 	private RMIInterface ri;
 	static int connectionRetrys;
+	static int RMIRegistry;
+    static String rmiLookup;
+
 
 	public static void main(String[] args) {
 		readProperties();
-		new TCPServer();
+		RMIRegistry = Integer.parseInt(prop.getProperty("RmiRegistry"));
+        rmiLookup = prop.getProperty("RmiLookup");
+        new TCPServer();
 	}
 
 	public TCPServer() {
 		try {
 			
 			connectionRetrys = Integer.parseInt(prop.getProperty("connectionRetrys"));
-			ri = (RMIInterface) LocateRegistry.getRegistry(4001).lookup("rmi");
+			ri = (RMIInterface) LocateRegistry.getRegistry(RMIRegistry).lookup(rmiLookup);
 			
 			System.out.println("Listening in port: " + prop.getProperty("TcpPort") + "...");
 
