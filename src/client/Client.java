@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Locale;
 import java.util.Scanner;
-
 import common.DatabaseRow;
-import javafx.scene.chart.PieChart.Data;
 
 public class Client {
 	ServerConnection servConn;
@@ -19,7 +17,7 @@ public class Client {
 	
 	public Client()
 	{
-		this.servConn = new ServerConnection();
+		this.servConn = new ServerConnection(this);
 		this.sc = new Scanner(System.in);
 		this.loggedIn = false;
 		this.loggedUser = null;
@@ -1144,6 +1142,8 @@ public class Client {
 
 	public static void main(String[] args) {
 		Client client = new Client();
-		client.launch();
+		
+		if(client.servConn.getSocket() != null)
+			client.launch(); 
 	}
 }

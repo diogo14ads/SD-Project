@@ -158,8 +158,18 @@ public class ClientConnection extends Thread {
 				{
 					sendMessageUser(message);
 				}
+				else if(message.getType() == TCPMessageType.RECONNECT_REQUEST)
+				{
+					reconnect(message);
+				}
 			}
 		}
+		
+	}
+
+	private void reconnect(TCPMessage message) {
+		
+		activeUser = message.getStrings().get(0);
 		
 	}
 

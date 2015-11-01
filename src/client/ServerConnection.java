@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -17,27 +18,62 @@ public class ServerConnection{
 	
 	static Properties prop = new Properties();
 
-	ObjectOutputStream oos;
-	ObjectInputStream ois;
-	Socket socket;
-		
-	public ServerConnection()
+	private ObjectOutputStream oos;
+	private ObjectInputStream ois;
+	private Socket socket;
+	private int connectionRetrys;
+	private Client client;
+	
+
+	
+
+	public ServerConnection(Client client)
 	{
 		try {
 			readProperties();
 
 			socket = new Socket(prop.getProperty("host"), Integer.parseInt(prop.getProperty("TcpPort")));
+			connectionRetrys = Integer.parseInt(prop.getProperty("connectionRetrys"));
 			
-			System.out.println(socket.isClosed());
+			this.client = client;
 			
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
 			
 			System.out.println("SOCKET="+socket);
-		} catch (IOException e) {
+		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.err.println("Exception: "+ e);
 		}
+	}
+	
+	private boolean reconnect() {
+		TCPMessage message = new TCPMessage(TCPMessageType.RECONNECT_REQUEST);
+		readProperties();
+		try {
+			socket = new Socket(prop.getProperty("host"), Integer.parseInt(prop.getProperty("TcpPort")));
+			oos = new ObjectOutputStream(socket.getOutputStream());
+			ois = new ObjectInputStream(socket.getInputStream());
+			
+			message.getStrings().add(client.loggedUser);
+			sendTCPMessage(message);
+			
+			return true;
+			
+		} catch (NumberFormatException e) {
+			return false;
+		} catch (UnknownHostException e) {
+			return false;
+		} catch (IOException e) {
+			return false;
+		}
+		
 	}
 	
 	public void closeConnection()
@@ -53,14 +89,19 @@ public class ServerConnection{
 		System.out.println("Connection ended");
 	}
 	
+	
+	public Socket getSocket() {
+		return socket;
+	}
+	
 	public boolean registerAccount(ArrayList<String> registerData)	//Dá para fazer uma função geral
 	{
 		TCPMessage message = new TCPMessage(TCPMessageType.REGISTER_REQUEST,registerData);
 		TCPMessage response = null;
 		
-		sendTCPMessage(message);
-		
-		response = receiveTCPMessage();
+			sendTCPMessage(message);
+			
+			response = receiveTCPMessage();
 		
 		if(response != null && response.getStrings().get(0).equals("1"))
 			return true;
@@ -373,31 +414,44 @@ public class ServerConnection{
 	
 	public boolean sendTCPMessage(TCPMessage message)
 	{
-		try {
-			oos.writeObject(message);
-			return true;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
+		boolean isConnected=false;
+		while(true)
+		{
+			try {
+				oos.writeObject(message);
+				return true;
+			} catch (IOException e) {
+				for(int i = 0; i < connectionRetrys ; i++)
+				{
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					if(isConnected=reconnect())
+						break;
+				}
+				if(isConnected==false)
+				{
+					return false;
+				}
+			}
 		}
 	}
 	
 	public TCPMessage receiveTCPMessage()
 	{
-		try {
-			return ((TCPMessage) ois.readObject());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+				try {
+					return ((TCPMessage) ois.readObject());
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return null;
 	}
-
-	
 
 }
