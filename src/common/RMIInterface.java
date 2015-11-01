@@ -73,4 +73,7 @@ public interface RMIInterface extends Remote {
 
 	public boolean sendMessageUser(int projectId, String email, String msg) throws RemoteException;
 
+
+	public int checkRewardPrice(int rewardId) throws RemoteException;
+
 }

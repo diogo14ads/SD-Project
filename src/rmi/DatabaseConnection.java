@@ -8,11 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-
-import com.sun.xml.internal.bind.v2.model.core.ID;
-
 import common.DatabaseRow;
-import javafx.scene.chart.PieChart.Data;
 
 public class DatabaseConnection {
 
@@ -192,6 +188,35 @@ public class DatabaseConnection {
 			return false;
 		}
 		return true;
+	}
+	
+	public int checkRewardPrice(int rewardId) {
+		String sqlQuery = null;
+		Statement statement = null;
+		ResultSet result = null;
+		int balance = -1;
+		
+		try {
+			statement = connection.createStatement();
+			
+			sqlQuery = "select value "
+					+ "from reward "
+					+ "where reward_id = '"+rewardId+"'";
+			
+			result = statement.executeQuery(sqlQuery);
+			
+			result.next();
+
+			balance = result.getInt(1);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		return balance;
 	}
 
 	public int checkBalance(String activeUser) {
@@ -664,9 +689,8 @@ public class DatabaseConnection {
 					+ "and level_id in (select level_id from level "
 									+ "where id_project = "+projectId+" "
 									+ "and objective <= (select money_raised "
-									+ "from project "
-									+ "where id_project = "+projectId+"))"
-					+ "or level_id = 0";
+													+ "from project "
+													+ "where id_project = "+projectId+") or level_id=0)";
 			
 			resultSet = statement.executeQuery(sqlQuery);
 			
@@ -772,9 +796,9 @@ public class DatabaseConnection {
 		try {
 			statement = connection.createStatement();
 			
-			sqlQuery = "select r.reward_description, pr.project_name, pr.date_end > current_timestamp, r.value, p.pledge_id "
-					+ "from pledge p, reward r, project pr "
-					+ "where email_receiver = '"+activeUser+"' and p.reward_id = r.reward_id and pr.id_project = r.id_project;";
+			sqlQuery = "select r.reward_description, pr.project_name, pr.is_open, r.value, p.pledge_id, pr.money_raised>=l.objective "
+					+ "from pledge p, reward r, project pr, level l "
+					+ "where email_receiver = '"+activeUser+"' and p.reward_id = r.reward_id and pr.id_project = r.id_project and (l.id_project = pr.id_project and l.level_id=0);";
 			
 			
 			resultSet = statement.executeQuery(sqlQuery);
@@ -786,8 +810,9 @@ public class DatabaseConnection {
 				rowInfo.add(resultSet.getString(1)); 	//reward_description
 				rowInfo.add(resultSet.getString(2));	//project_name
 				rowInfo.add(Integer.toString(resultSet.getInt(4)));		//value
-				rowInfo.add(resultSet.getString(3));	//project active?
+				rowInfo.add(resultSet.getString(3));	//project active(not expired)?
 				rowInfo.add(resultSet.getString(5));	//pledge Id
+				rowInfo.add(resultSet.getString(6));	//is_open
 				row = new DatabaseRow(rowInfo);
 				table.add(row);
 			}
@@ -1013,6 +1038,73 @@ public class DatabaseConnection {
 		
 		return table;
 	}
+
+	public boolean endExpiredProject() {
+		String successfullQuery = null;
+		String unsuccessfullQuery = null;
+		String closeUnsuccessfullQuery = null;
+		//ResultSet result = null;
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		successfullQuery = "update project "
+				+ "set is_open = false "
+				+ "where id_project in (select p.id_project "
+									+ "	from project p "
+									+ "where p.money_raised >= (select objective "
+															+ "from level "
+															+ "where level_id = 0 and id_project = p.id_project) "
+									+ "and p.date_end <= current_timestamp)"
+				+ "and is_open = true";
+		
+		unsuccessfullQuery = "update user_account "
+				+"set balance = balance + (aux.add) "
+				+"from (select p.email_buyer as buyer, sum(aux.value) as add "
+					+"from pledge p, (select reward_id, value "
+								+"from reward "
+								+"where id_project in (select p.id_project "
+										+"from project p "
+										+"where p.money_raised < (select objective "
+													+"from level "
+													+"where level_id = 0 and id_project = p.id_project) "
+										+"and p.date_end <= current_timestamp and is_open = true)) aux "
+						+"where p.reward_id = aux.reward_id "
+						+"group by p.email_buyer) aux "
+				+"where email = aux.buyer"; //TODO ainda está mal fica sempre a adicionar dinheiro
+		
+		closeUnsuccessfullQuery = "update project "
+								+ "set is_open = false "
+								+ "where id_project in (select p.id_project "
+													+ "	from project p "
+													+ "where p.money_raised < (select objective "
+																			+ "from level "
+																			+ "where level_id = 0 and id_project = p.id_project) "
+													+ "and p.date_end <= current_timestamp)"
+								+ "and is_open = true";
+		
+		
+		try {
+			statement.executeUpdate(successfullQuery);
+			statement.executeUpdate(unsuccessfullQuery);
+			statement.executeUpdate(closeUnsuccessfullQuery);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+		
+
+	}
+
+
 	
 	//Rascunho
 	/*

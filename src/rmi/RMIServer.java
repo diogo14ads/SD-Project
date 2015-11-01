@@ -3,7 +3,6 @@ package rmi;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import common.DatabaseRow;
@@ -20,6 +19,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 
 	protected RMIServer() throws RemoteException{
 		this.dbCon = new DatabaseConnection();
+		
+		new Inspector(2000,this.dbCon);
 	}
 	
 	public boolean login(String email, String password) throws RemoteException
@@ -120,6 +121,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 
 	public boolean sendMessageUser(int projectId, String email, String msg) throws RemoteException {
 		return dbCon.sendMessage(projectId,email,msg);
+	}
+
+	public int checkRewardPrice(int rewardId) throws RemoteException {
+		return dbCon.checkRewardPrice(rewardId);
 	}
 	
 	public static void main(String[] args) throws RemoteException{

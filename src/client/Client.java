@@ -299,7 +299,7 @@ public class Client {
 		}
 		else if(table.size()==0)
 		{
-			System.out.println("This level does not have rewards"); //isto nunca deve acontecer
+			System.out.println("This level does not have rewards");
 			return 0;
 		}
 		else
@@ -419,7 +419,7 @@ public class Client {
 	{
 		int projectId;
 		String op = null;
-		projectId = chooseMyProject(servConn.getMyProjectList());
+		projectId = chooseMyProject(servConn.getMyProjectList()); //TODO mensagem errada
 		
 		if(projectId > 0)
 		{
@@ -721,8 +721,12 @@ public class Client {
 		{
 			if(table.get(i).getColumns().get(3).equals("t"))
 				status = "Pending";
-			else
+			else if(table.get(i).getColumns().get(3).equals("f") && table.get(i).getColumns().get(5).equals("t"))
 				status = "Successfull";
+			else if(table.get(i).getColumns().get(3).equals("f") && table.get(i).getColumns().get(5).equals("f"))
+				status = "Unsuccessfull";
+			else
+				status = "Unknown status";
 			System.out.println((i+1)+": ( "+table.get(i).getColumns().get(2)+"$ ) "+table.get(i).getColumns().get(0)+" | Status: "+status);
 		}
 		

@@ -1,7 +1,5 @@
 package tcpserver;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -261,18 +259,25 @@ public class ClientConnection extends Thread {
 		
 	}
 
-	private void buyReward(TCPMessage message) {
+	private boolean buyReward(TCPMessage message) {
 		boolean success;
 		
 		int rewardId = message.getIntegers().get(0);
 		
 		try {
-			success = ri.buyReward(rewardId,activeUser);
+			if(ri.checkBalance(activeUser)>ri.checkRewardPrice(rewardId))
+			{
+				success = ri.buyReward(rewardId,activeUser);
+				return true;
+			}
+			else
+				return false;
 
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return false;
 	}
 
 	private void getActiveRewards(TCPMessage message) {
