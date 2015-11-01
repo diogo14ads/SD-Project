@@ -13,7 +13,7 @@ import common.RMIInterface;
 import common.TCPMessage;
 import common.TCPMessageType;
 
-public class ClientConnection implements Runnable {
+public class ClientConnection extends Thread {
 	
 	private Socket socket;
 	private RMIInterface ri;
@@ -24,6 +24,7 @@ public class ClientConnection implements Runnable {
 		super();
 		this.socket = socket;
 		this.ri = ri;
+		this.start();
 		try {
 			//Para receber requests
 			this.oos = new ObjectOutputStream(socket.getOutputStream());

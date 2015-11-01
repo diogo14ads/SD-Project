@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
@@ -19,50 +20,55 @@ import common.RMIInterface;
 public class TCPServer {
 
 	static Properties prop = new Properties();
-	static boolean isPrimary = false;
+	static boolean startAsPrimary = false;
 	static DatagramSocket aSocket = null;
+	static Socket testSocket;
 
 	public static void main(String[] args) {
+		readProperties();
+		new TCPServer();
+	}
+
+	public TCPServer() {
 		try {
-			readProperties();
 
-			RMIInterface ri = (RMIInterface) LocateRegistry.getRegistry(prop.getProperty("rmiRegistry"))
-					.lookup(prop.getProperty("rmiLookpup"));
-			System.out.println("Listening in port: " + prop.getProperty("tcpPort") + "...");
-
-			isPrimary = setToPrimary();
-
-			if (isPrimary) {
+			RMIInterface ri = (RMIInterface) LocateRegistry.getRegistry(4001).lookup("rmi");
+			System.out.println("Listening in port: " + prop.getProperty("TcpPort") + "...");
+			
+			/**
+			 * Verifica se já existe um servidor a correr tentando criar uma socket.
+			 * Se criar uma socket funcionar então fecha a socket de teste
+			 * e começa a thread do servidor secundário.
+			 */
+			try {
+				testSocket = new Socket(prop.getProperty("host"), Integer.parseInt(prop.getProperty("TcpPort")));
+			} catch (IOException e) {
+				startAsPrimary = true;
+			}
+			
+			
+			if (!startAsPrimary) {
+				try {
+					testSocket.close();
+				} catch (Exception e) {
+					System.out.println("There was a problem closing the testSocket.");
+				}
+				new TCPServerSec();
+				
+			} else {
 				System.out.println("Server set as: Primary");
 
-				aSocket = new DatagramSocket(6789);
-				System.out.println("Socket Datagram à escuta no porto 6789");
-
-				ServerSocket listenSocket = new ServerSocket(Integer.parseInt(prop.getProperty("tcpPort")));
+				ServerSocket listenSocket = new ServerSocket(Integer.parseInt(prop.getProperty("TcpPort")));
 				System.out.println("LISTEN SOCKET = " + listenSocket);
-
 				while (true) {
-					byte[] buffer = new byte[1000];
-					DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-					aSocket.receive(request);
-					System.out.println("Server Recebeu: " + (new String(request.getData(), 0, request.getLength())));
-
-					DatagramPacket reply = new DatagramPacket(request.getData(), request.getLength(),
-							request.getAddress(), request.getPort());
-					aSocket.send(reply);
-
 					Socket clientSocket = listenSocket.accept();
 					System.out.println("CLIENT_SOCKET (created at accept())=" + clientSocket);
 
-					(new ClientConnection(clientSocket, ri)).run(); // Client
-																	// Thread
+					new ClientConnection(clientSocket, ri);
 
 				}
-			} else {
-
 			}
-		} catch (SocketException e) {
-			System.out.println("Socket: " + e.getMessage());
+
 		} catch (IOException io) {
 			System.out.println("Listen: " + io.getMessage());
 		} catch (NotBoundException nb) {
@@ -71,51 +77,87 @@ public class TCPServer {
 
 	}
 
-	public static boolean setToPrimary() {
-		String ipUdp = "127.0.0.1";
-		System.out.println("teste!");
+	public static void readProperties() {
+
+		InputStream input = null;
 		try {
-			aSocket = new DatagramSocket();
-			while (true) {
+			input = new FileInputStream("config.properties");
+			prop.load(input);
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
 				try {
-					int estado = 0;
-					String texto = "teste";
-					byte[] m = texto.getBytes();
-
-					InetAddress aHost = InetAddress.getByName(ipUdp);
-					int serverPort = 6789;
-					DatagramPacket request = new DatagramPacket(m, m.length, aHost, serverPort);
-					System.out.println("ping!");
-					for (int i = 0; i < 5; i++) {
-						aSocket.send(request);
-						byte[] buffer = new byte[1000];
-						DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
-						aSocket.setSoTimeout(1000);
-						try {
-							aSocket.receive(reply);
-							estado = 1;
-						} catch (IOException E) {
-							System.out.println("reply: " + new String(reply.getData(), 0, reply.getLength()));
-						}
-					}
-					if (estado == 0) {
-						return true;
-					}
-
-				} catch (SocketException e) {
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
+					input.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-		} catch (SocketException e) {
-		} finally {
-			if (aSocket != null)
-				aSocket.close();
 		}
-		return false;
+	}
+
+}
+
+class TCPServerSec extends Thread {
+
+	static Properties prop = new Properties();
+	DatagramSocket udpConection;
+	byte[] pingMessage;
+	int conectionFail = 0;
+	InetAddress hostConection;
+	DatagramPacket sender, reciver;
+	int counter;
+	String[] args = null;
+
+	TCPServerSec() {
+		counter = 0;
+		readProperties();
+		this.start();
+
+	}
+
+	public void run() {
+
+		try {
+			udpConection = new DatagramSocket();
+
+			while (true) {
+
+				try {
+					pingMessage = "ping".getBytes();
+					hostConection = InetAddress.getByName(prop.getProperty("host"));
+					sender = new DatagramPacket(pingMessage, pingMessage.length, hostConection,
+							Integer.parseInt(prop.getProperty("UDPPort")));
+					udpConection.send(sender);
+					udpConection.setSoTimeout(2000);
+					pingMessage = new byte[1000];
+					reciver = new DatagramPacket(pingMessage, pingMessage.length);
+					udpConection.receive(reciver);
+					System.out.println("[Backup Server] Recebi esta mensagem do Serviodr Principal: "
+							+ new String(reciver.getData(), 0, reciver.getLength()));
+
+					Thread.sleep(2000);
+
+				} catch (SocketTimeoutException e) {
+					if (counter < Integer.parseInt(prop.getProperty("maxTries"))) {
+						System.out.println("[Backup Server] Não recebi ping do Servidor Principal.");
+						counter++;
+
+					} else {
+						System.out
+								.println("[Backup Server] O Servidor principal está em baixo, vouassumir o controlo.");
+						udpConection.close();
+						new TCPServer();
+					}
+				}
+
+			}
+
+		} catch (Exception e) {
+			System.out.print("[BackupServer]");
+			e.printStackTrace();
+		}
 
 	}
 
