@@ -942,7 +942,10 @@ public class Client {
 		ArrayList<DatabaseRow> table = servConn.getProjects(true); //true significa current projects
 		int index = chooseProject(table);
 		
-		printProjectInfo(table.get(index).getColumns(),true);
+		if(index>=0)
+			printProjectInfo(table.get(index).getColumns(),true);
+		else if(index < -2)
+			System.out.println("Unexpected Problem!");
 		
 	}
 	
