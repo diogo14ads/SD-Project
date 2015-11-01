@@ -24,7 +24,6 @@ public class ClientConnection extends Thread {
 		super();
 		this.socket = socket;
 		this.ri = ri;
-		this.start();
 		try {
 			//Para receber requests
 			this.oos = new ObjectOutputStream(socket.getOutputStream());
@@ -34,6 +33,7 @@ public class ClientConnection extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.start();
 	}
 
 	@Override
