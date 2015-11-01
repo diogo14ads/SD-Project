@@ -34,29 +34,30 @@ public class TCPServer {
 
 			RMIInterface ri = (RMIInterface) LocateRegistry.getRegistry(4001).lookup("rmi");
 			System.out.println("Listening in port: " + prop.getProperty("TcpPort") + "...");
-			
+
 			/**
-			 * Verifica se já existe um servidor a correr tentando criar uma socket.
-			 * Se criar uma socket funcionar então fecha a socket de teste
-			 * e começa a thread do servidor secundário.
+			 * Verifica se já existe um servidor a correr tentando criar uma
+			 * socket. Se criar uma socket funcionar então fecha a socket de
+			 * teste e começa a thread do servidor secundário.
 			 */
 			try {
 				testSocket = new Socket(prop.getProperty("host"), Integer.parseInt(prop.getProperty("TcpPort")));
 			} catch (IOException e) {
 				startAsPrimary = true;
 			}
-			
-			
+
 			if (!startAsPrimary) {
 				try {
 					testSocket.close();
 				} catch (Exception e) {
 					System.out.println("There was a problem closing the testSocket.");
 				}
-				new TCPServerSec();
-				
+				new TCPServerSec(Integer.parseInt(prop.getProperty("maxTries")),prop.getProperty("host"),Integer.parseInt(prop.getProperty("UDPPort")));
+
 			} else {
 				System.out.println("Server set as: Primary");
+
+				UDPServer conectServer = new UDPServer(Integer.parseInt(prop.getProperty("UDPPort")));
 
 				ServerSocket listenSocket = new ServerSocket(Integer.parseInt(prop.getProperty("TcpPort")));
 				System.out.println("LISTEN SOCKET = " + listenSocket);
@@ -101,7 +102,9 @@ public class TCPServer {
 
 class TCPServerSec extends Thread {
 
-	static Properties prop = new Properties();
+	String _host;
+	int _maxtries;
+	int _udpPort;
 	DatagramSocket udpConection;
 	byte[] pingMessage;
 	int conectionFail = 0;
@@ -110,9 +113,11 @@ class TCPServerSec extends Thread {
 	int counter;
 	String[] args = null;
 
-	TCPServerSec() {
+	TCPServerSec(int maxtries, String host, int udpPort) {
+		_maxtries = maxtries;
+		_host = host;
+		_udpPort = udpPort;
 		counter = 0;
-		readProperties();
 		this.start();
 
 	}
@@ -126,27 +131,25 @@ class TCPServerSec extends Thread {
 
 				try {
 					pingMessage = "ping".getBytes();
-					hostConection = InetAddress.getByName(prop.getProperty("host"));
-					sender = new DatagramPacket(pingMessage, pingMessage.length, hostConection,
-							Integer.parseInt(prop.getProperty("UDPPort")));
+					hostConection = InetAddress.getByName(_host);
+					sender = new DatagramPacket(pingMessage, pingMessage.length, hostConection,_udpPort);
 					udpConection.send(sender);
 					udpConection.setSoTimeout(2000);
 					pingMessage = new byte[1000];
 					reciver = new DatagramPacket(pingMessage, pingMessage.length);
 					udpConection.receive(reciver);
-					System.out.println("[Backup Server] Recebi esta mensagem do Serviodr Principal: "
-							+ new String(reciver.getData(), 0, reciver.getLength()));
+					System.out.println("[Secondary Server] Got the "
+							+ new String(reciver.getData(), 0, reciver.getLength()) + " back from the Primary Server");
 
 					Thread.sleep(2000);
 
 				} catch (SocketTimeoutException e) {
-					if (counter < Integer.parseInt(prop.getProperty("maxTries"))) {
-						System.out.println("[Backup Server] Não recebi ping do Servidor Principal.");
+					if (counter < _maxtries) {
+						System.out.println("[Secondary Server] Primary Server failed to respond");
 						counter++;
 
 					} else {
-						System.out
-								.println("[Backup Server] O Servidor principal está em baixo, vouassumir o controlo.");
+						System.out.println("[Secondary Server] Taking over as Primary Server");
 						udpConection.close();
 						new TCPServer();
 					}
@@ -161,23 +164,43 @@ class TCPServerSec extends Thread {
 
 	}
 
-	public static void readProperties() {
+}
 
-		InputStream input = null;
+class UDPServer extends Thread {
+
+	DatagramSocket conection;
+	byte[] buffer = new byte[1000];
+	DatagramPacket sender, receiver;
+	int serverPort;
+	String pingMessage;
+
+	UDPServer(int port) {
+
+		this.serverPort = port;
+		this.start();
+
+	}
+
+	public void run() {
 		try {
-			input = new FileInputStream("config.properties");
-			prop.load(input);
 
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} finally {
-			if (input != null) {
-				try {
-					input.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			conection = new DatagramSocket(serverPort);
+
+			while (true) {
+
+				receiver = new DatagramPacket(buffer, buffer.length);
+				conection.receive(receiver);
+				pingMessage = new String(receiver.getData(), 0, receiver.getLength());
+				System.out.println("[UDPServer]Secondary Server tried to: " + pingMessage);
+				sender = new DatagramPacket(receiver.getData(), receiver.getLength(), receiver.getAddress(),
+						receiver.getPort());
+				conection.send(sender);
+
 			}
+
+		} catch (Exception e) {
+			System.out.print("[UDPServer]");
+			e.printStackTrace();
 		}
 	}
 
