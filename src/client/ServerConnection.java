@@ -99,9 +99,22 @@ public class ServerConnection{
 		TCPMessage message = new TCPMessage(TCPMessageType.REGISTER_REQUEST,registerData);
 		TCPMessage response = null;
 		
-			sendTCPMessage(message);
+		while(true)
+		{
+			if(!sendTCPMessage(message))
+			{
+				System.out.println("It was not possible to send the message!");
+				break;
+			}
 			
-			response = receiveTCPMessage();
+			try {
+				response = receiveTCPMessage();
+				break;
+			} catch (ClassNotFoundException e) {
+				System.err.println("Exception: "+e);
+				break;
+			} catch (IOException e){}
+		}
 		
 		if(response != null && response.getStrings().get(0).equals("1"))
 			return true;
@@ -114,9 +127,22 @@ public class ServerConnection{
 		TCPMessage message = new TCPMessage(TCPMessageType.LOGIN_REQUEST, loginData);
 		TCPMessage response = null;
 		
-		sendTCPMessage(message);
-		
-		response = receiveTCPMessage();
+		while(true)
+		{
+			if(!sendTCPMessage(message))
+			{
+				System.out.println("It was not possible to send the message!");
+				break;
+			}
+			
+			try {
+				response = receiveTCPMessage();
+				break;
+			} catch (ClassNotFoundException e) {
+				System.err.println("Exception: "+e);
+				break;
+			} catch (IOException e){}
+		}
 		
 		if(response != null && response.getStrings().get(0).equals("1"))
 			return true;
@@ -160,9 +186,22 @@ public class ServerConnection{
 		TCPMessage message = new TCPMessage(TCPMessageType.CHECK_BALANCE_REQUEST);
 		TCPMessage response = null;
 		
-		sendTCPMessage(message);
-		
-		response = receiveTCPMessage();  //saldo vem no index 0 do arraylist de integers
+		while(true)
+		{
+			if(!sendTCPMessage(message))
+			{
+				System.out.println("It was not possible to send the message!");
+				break;
+			}
+			
+			try {
+				response = receiveTCPMessage();
+				break;
+			} catch (ClassNotFoundException e) {
+				System.err.println("Exception: "+e);
+				break;
+			} catch (IOException e){}
+		}
 		
 		if(response != null)
 			return response.getIntegers().get(0);
@@ -175,9 +214,22 @@ public class ServerConnection{
 		TCPMessage response = null;
 		ArrayList<DatabaseRow> myProjects = null;
 		
-		sendTCPMessage(message);
-		
-		response = receiveTCPMessage();
+		while(true)
+		{
+			if(!sendTCPMessage(message))
+			{
+				System.out.println("It was not possible to send the message!");
+				break;
+			}
+			
+			try {
+				response = receiveTCPMessage();
+				break;
+			} catch (ClassNotFoundException e) {
+				System.err.println("Exception: "+e);
+				break;
+			} catch (IOException e){}
+		}
 		
 		if(response != null)
 		{
@@ -199,9 +251,22 @@ public class ServerConnection{
 		
 		message.getIntegers().add(projectId);
 		
-		sendTCPMessage(message);
-		
-		response = receiveTCPMessage();
+		while(true)
+		{
+			if(!sendTCPMessage(message))
+			{
+				System.out.println("It was not possible to send the message!");
+				break;
+			}
+			
+			try {
+				response = receiveTCPMessage();
+				break;
+			} catch (ClassNotFoundException e) {
+				System.err.println("Exception: "+e);
+				break;
+			} catch (IOException e){}
+		}
 		
 		if(response != null)
 			return response.getTable();
@@ -255,9 +320,22 @@ public class ServerConnection{
 
 		message.getIntegers().add(levelId);
 		
-		sendTCPMessage(message);
-		
-		response = receiveTCPMessage();
+		while(true)
+		{
+			if(!sendTCPMessage(message))
+			{
+				System.out.println("It was not possible to send the message!");
+				break;
+			}
+			
+			try {
+				response = receiveTCPMessage();
+				break;
+			} catch (ClassNotFoundException e) {
+				System.err.println("Exception: "+e);
+				break;
+			} catch (IOException e){}
+		}
 		
 		if(response != null)
 			return response.getTable();
@@ -307,9 +385,22 @@ public class ServerConnection{
 		
 		message = new TCPMessage(type);
 		
-		sendTCPMessage(message);
-		
-		response = receiveTCPMessage();
+		while(true)
+		{
+			if(!sendTCPMessage(message))
+			{
+				System.out.println("It was not possible to send the message!");
+				break;
+			}
+			
+			try {
+				response = receiveTCPMessage();
+				break;
+			} catch (ClassNotFoundException e) {
+				System.err.println("Exception: "+e);
+				break;
+			} catch (IOException e){}
+		}
 		
 		if(response != null)
 		{
@@ -326,9 +417,22 @@ public class ServerConnection{
 		
 		message.getIntegers().add(projectId);
 		
-		sendTCPMessage(message);
-		
-		response = receiveTCPMessage();
+		while(true)
+		{
+			if(!sendTCPMessage(message))
+			{
+				System.out.println("It was not possible to send the message!");
+				break;
+			}
+			
+			try {
+				response = receiveTCPMessage();
+				break;
+			} catch (ClassNotFoundException e) {
+				System.err.println("Exception: "+e);
+				break;
+			} catch (IOException e){}
+		}
 		
 		if(response != null)
 			return response.getTable();
@@ -347,11 +451,23 @@ public class ServerConnection{
 	public ArrayList<DatabaseRow> checkMyRewards() {
 		TCPMessage message = new TCPMessage(TCPMessageType.MY_REWARDS_REQUEST);
 		TCPMessage response = null;
-		ArrayList<DatabaseRow> table = null;
 		
-		sendTCPMessage(message);
-		
-		response = receiveTCPMessage();
+		while(true)
+		{
+			if(!sendTCPMessage(message))
+			{
+				System.out.println("It was not possible to send the message!");
+				break;
+			}
+			
+			try {
+				response = receiveTCPMessage();
+				break;
+			} catch (ClassNotFoundException e) {
+				System.err.println("Exception: "+e);
+				break;
+			} catch (IOException e){}
+		}
 		
 		if(response != null)
 			return response.getTable();
@@ -392,9 +508,22 @@ public class ServerConnection{
 		TCPMessage message = new TCPMessage(TCPMessageType.MY_MESSAGES_REQUEST);
 		TCPMessage response = null;
 		
-		sendTCPMessage(message);
-		
-		response = receiveTCPMessage();
+		while(true)
+		{
+			if(!sendTCPMessage(message))
+			{
+				System.out.println("It was not possible to send the message!");
+				break;
+			}
+			
+			try {
+				response = receiveTCPMessage();
+				break;
+			} catch (ClassNotFoundException e) {
+				System.err.println("Exception: "+e);
+				break;
+			} catch (IOException e){}
+		}
 		
 		if(response != null)
 			return response.getTable();
@@ -440,18 +569,9 @@ public class ServerConnection{
 		}
 	}
 	
-	public TCPMessage receiveTCPMessage()
+	public TCPMessage receiveTCPMessage() throws ClassNotFoundException, IOException
 	{
-				try {
-					return ((TCPMessage) ois.readObject());
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return null;
+		return ((TCPMessage) ois.readObject());
 	}
 
 }
