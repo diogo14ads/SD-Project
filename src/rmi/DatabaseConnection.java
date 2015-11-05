@@ -258,7 +258,7 @@ public class DatabaseConnection {
 
 	public ArrayList<DatabaseRow> getMyProjectsList(String email) 
 	{
-		ArrayList<DatabaseRow> table = new ArrayList<>();
+		ArrayList<DatabaseRow> table = new ArrayList<DatabaseRow>();
 		DatabaseRow row = null;
 		ArrayList<String> rowInfo = null;
 		String sqlQuery = null;
@@ -278,7 +278,7 @@ public class DatabaseConnection {
 			while(resultSet.next())
 			{
 				//esta parte está um bocado confusa, mas funciona
-				rowInfo = new ArrayList<>();
+				rowInfo = new ArrayList<String>();
 				rowInfo.add(Integer.toString(resultSet.getInt(1)));
 				rowInfo.add(resultSet.getString(2));
 				row = new DatabaseRow(rowInfo);
@@ -304,7 +304,7 @@ public class DatabaseConnection {
 
 	public ArrayList<DatabaseRow> getProjectLevelsList(Integer projectId) {
 
-		ArrayList<DatabaseRow> table = new ArrayList<>();
+		ArrayList<DatabaseRow> table = new ArrayList<DatabaseRow>();
 		DatabaseRow row = null;
 		ArrayList<String> rowInfo = null;
 		String sqlQuery = null;
@@ -323,7 +323,7 @@ public class DatabaseConnection {
 			while(resultSet.next())
 			{
 				//esta parte está um bocado confusa, mas funciona
-				rowInfo = new ArrayList<>();
+				rowInfo = new ArrayList<String>();
 				rowInfo.add(Integer.toString(resultSet.getInt(1)));
 				rowInfo.add(Integer.toString(resultSet.getInt(2)));
 				row = new DatabaseRow(rowInfo);
@@ -434,7 +434,7 @@ public class DatabaseConnection {
 
 	public ArrayList<DatabaseRow> getLevelRewardList(int projectId, int levelId) {
 
-		ArrayList<DatabaseRow> table = new ArrayList<>();
+		ArrayList<DatabaseRow> table = new ArrayList<DatabaseRow>();
 		DatabaseRow row = null;
 		ArrayList<String> rowInfo = null;
 		String sqlQuery = null;
@@ -453,7 +453,7 @@ public class DatabaseConnection {
 			while(resultSet.next())
 			{
 				//esta parte está um bocado confusa, mas funciona
-				rowInfo = new ArrayList<>();
+				rowInfo = new ArrayList<String>();
 				rowInfo.add(Integer.toString(resultSet.getInt(1)));
 				rowInfo.add(resultSet.getString(2));
 				rowInfo.add(Integer.toString(resultSet.getInt(3)));
@@ -583,7 +583,7 @@ public class DatabaseConnection {
 	}
 
 	public ArrayList<DatabaseRow> currentProjectsList() {
-		ArrayList<DatabaseRow> table = new ArrayList<>();
+		ArrayList<DatabaseRow> table = new ArrayList<DatabaseRow>();
 		DatabaseRow row = null;
 		ArrayList<String> rowInfo = null;
 		String sqlQuery = null;
@@ -603,7 +603,7 @@ public class DatabaseConnection {
 			while(resultSet.next())
 			{
 				//esta parte está um bocado confusa, mas funciona
-				rowInfo = new ArrayList<>();
+				rowInfo = new ArrayList<String>();
 				rowInfo.add(Integer.toString(resultSet.getInt(1))); 	//project id
 				rowInfo.add(resultSet.getString(2));					//date_end
 				rowInfo.add(resultSet.getString(3));					//project name
@@ -632,7 +632,7 @@ public class DatabaseConnection {
 	}
 
 	public ArrayList<DatabaseRow> pastProjectsList() {
-		ArrayList<DatabaseRow> table = new ArrayList<>();
+		ArrayList<DatabaseRow> table = new ArrayList<DatabaseRow>();
 		DatabaseRow row = null;
 		ArrayList<String> rowInfo = null;
 		String sqlQuery = null;
@@ -652,7 +652,7 @@ public class DatabaseConnection {
 			while(resultSet.next())
 			{
 				//esta parte está um bocado confusa, mas funciona
-				rowInfo = new ArrayList<>();
+				rowInfo = new ArrayList<String>();
 				rowInfo.add(Integer.toString(resultSet.getInt(1))); 	//project id
 				rowInfo.add(resultSet.getString(2));					//date_end
 				rowInfo.add(resultSet.getString(3));					//project name
@@ -681,7 +681,7 @@ public class DatabaseConnection {
 	}
 
 	public ArrayList<DatabaseRow> activeRewardsList(int projectId) {
-		ArrayList<DatabaseRow> table = new ArrayList<>();
+		ArrayList<DatabaseRow> table = new ArrayList<DatabaseRow>();
 		DatabaseRow row = null;
 		ArrayList<String> rowInfo = null;
 		String sqlQuery = null;
@@ -705,7 +705,7 @@ public class DatabaseConnection {
 			while(resultSet.next())
 			{
 				//esta parte está um bocado confusa, mas funciona
-				rowInfo = new ArrayList<>();
+				rowInfo = new ArrayList<String>();
 				rowInfo.add(Integer.toString(resultSet.getInt(1)));	//reward_id
 				rowInfo.add(resultSet.getString(2));				//reward description
 				rowInfo.add(Integer.toString(resultSet.getInt(3)));	//reward value
@@ -794,7 +794,7 @@ public class DatabaseConnection {
 	}
 
 	public ArrayList<DatabaseRow> getMyRewards(String activeUser) {
-		ArrayList<DatabaseRow> table = new ArrayList<>();
+		ArrayList<DatabaseRow> table = new ArrayList<DatabaseRow>();
 		DatabaseRow row = null;
 		ArrayList<String> rowInfo = null;
 		String sqlQuery = null;
@@ -814,7 +814,7 @@ public class DatabaseConnection {
 			while(resultSet.next())
 			{
 				//esta parte está um bocado confusa, mas funciona
-				rowInfo = new ArrayList<>();
+				rowInfo = new ArrayList<String>();
 				rowInfo.add(resultSet.getString(1)); 	//reward_description
 				rowInfo.add(resultSet.getString(2));	//project_name
 				rowInfo.add(Integer.toString(resultSet.getInt(4)));		//value
@@ -995,7 +995,7 @@ public class DatabaseConnection {
 	 * */
 
 	public ArrayList<DatabaseRow> getMyMessages(String activeUser) {
-		ArrayList<DatabaseRow> table = new ArrayList<>();
+		ArrayList<DatabaseRow> table = new ArrayList<DatabaseRow>();
 		DatabaseRow row = null;
 		ArrayList<String> rowInfo = null;
 		String sqlQuery = null;
@@ -1020,7 +1020,7 @@ public class DatabaseConnection {
 			while(resultSet.next())
 			{
 				//esta parte está um bocado confusa, mas funciona
-				rowInfo = new ArrayList<>();
+				rowInfo = new ArrayList<String>();
 				rowInfo.add(resultSet.getString(1)); 	//text
 				rowInfo.add(resultSet.getString(2));	//message_date
 				rowInfo.add(Integer.toString(resultSet.getInt(3)));		//messageId

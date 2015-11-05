@@ -529,7 +529,7 @@ public class Client {
 
 	public void askLoginData()
 	{
-		ArrayList<String> loginData = new ArrayList<>();
+		ArrayList<String> loginData = new ArrayList<String>();
 		
 		System.out.println("Enter e-mail:");
 		loginData.add(sc.nextLine());
@@ -551,7 +551,7 @@ public class Client {
 	
 	public void askRegisterData()
 	{
-		ArrayList<String> registerData = new ArrayList<>();
+		ArrayList<String> registerData = new ArrayList<String>();
 		
 		System.out.println("Enter your first and last name: ");
 		registerData.add(sc.nextLine());
@@ -578,7 +578,7 @@ public class Client {
 	private void askProjectData() {
 		
 		//start date is system date
-		ArrayList<String> projectData = new ArrayList<>();
+		ArrayList<String> projectData = new ArrayList<String>();
 		String limitDate;
 		
 		System.out.println("Insert project name: ");
