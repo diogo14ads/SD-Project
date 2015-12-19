@@ -770,7 +770,6 @@ public class DatabaseConnection {
 			statement.executeUpdate(sqlQuery);
 			
 			connection.commit();
-			connection.setAutoCommit(true);
 			
 			
 		} catch (SQLException e) {
@@ -1112,7 +1111,39 @@ public class DatabaseConnection {
 
 	}
 
-
+	public ArrayList<String> getAdministrators(int projectId) {
+		ArrayList<String> admins = new ArrayList<String>();
+		DatabaseRow row = null;
+		String sqlQuery = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		
+		try {
+			statement = connection.createStatement();
+			
+			sqlQuery = "select email "
+					+ "from manages "
+					+ "where projectId = '"+projectId+"';";
+			
+			
+			resultSet = statement.executeQuery(sqlQuery);
+			
+			while(resultSet.next())
+			{
+				admins.add(resultSet.getString(1)); 	//reward_description
+			}
+			
+			System.out.println();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		return admins;
+	}
 	
 	//Rascunho
 	/*
@@ -1145,4 +1176,6 @@ public class DatabaseConnection {
 			}
 		}
 	}
+
+	
 }

@@ -170,5 +170,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 		}
 	}
 
+	@Override
+	public ArrayList<String> getAdministrators(int projectId) throws RemoteException {
+		return dbCon.getAdministrators(projectId);
+	}
+
 
 }

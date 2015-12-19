@@ -40,6 +40,8 @@ public interface RMIInterface extends Remote {
 
 	public boolean removeLevel(int levelId) throws RemoteException;
 
+	public ArrayList<String> getAdministrators(int projectId) throws RemoteException;
+	
 
 	public boolean addAdministrator(int projectId, String email) throws RemoteException;
 
