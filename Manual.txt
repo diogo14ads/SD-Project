@@ -1,0 +1,14 @@
+Elementos do grupo:
+Diogo Gonçalves
+Hugo Marques
+André Estevão
+
+1 - Inicialmente é necessário correr o RMIServer.jar;
+2 - Seguidamente exexutar o TCPServer.jar para correr um servidor;
+3 - Para correr o servidor secundário basta executar o TCPServer.jar novamente;
+4 - O cliente.jar deve ser executado após um ou dois servidores TCP estarem ativos para um funcionamento correcto.
+
+Para funcionamento correto em dois computadores:
+Editar o campo "host" para o IP do computador a correr o Servidor RMI no ficheiro config.properties do segundo computador.
+
+Para mudar configurações abrir o config.properties com um editor de texto e alterar manualmente.
